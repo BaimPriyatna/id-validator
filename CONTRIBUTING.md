@@ -29,9 +29,24 @@ Every validator must:
 
 ### One-time setup
 
-1. Create an npm access token (Automation type) for an account/org that can
-   publish `id-validator-id` and the `@id-validator/*` scope.
-2. Add it as a repository secret named `NPM_TOKEN`
+1. Create an npm Organization named exactly `id-validator` (npmjs.com ->
+   profile -> Add Organization -> free plan) if it doesn't exist yet —
+   the `@id-validator/*` scope requires an org or user account with that
+   exact name.
+2. Create an npm **Granular Access Token** (classic/Automation tokens were
+   removed by npm on 2025-11-05 — granular is the only option now):
+   - Permissions: Read and write
+   - Packages and scopes: "All Packages" for the very first publish (the
+     packages don't exist yet, so they can't be individually selected —
+     narrow this to just our packages once they exist)
+   - Organizations: select `id-validator`
+   - **Bypass 2FA: enabled** (off by default; required since this runs
+     unattended in CI)
+   - Expiration: npm now caps write-token lifetime at 90 days — there is
+     no "never expires" option. **Set a reminder to regenerate this token
+     and update the `NPM_TOKEN` secret before it expires**, or releases
+     will start failing silently at the publish step.
+3. Add the token as a repository secret named `NPM_TOKEN`
    (Settings -> Secrets and variables -> Actions).
 
 ### Cutting a release
