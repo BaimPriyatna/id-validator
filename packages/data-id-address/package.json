@@ -1,6 +1,6 @@
 {
   "name": "@id-validator/data-id-address",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Optional Indonesia address reference data: province/regency/district hierarchy + postal-code reverse index, for use alongside id-validator-id",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -14,7 +14,10 @@
     }
   },
   "sideEffects": false,
-  "files": ["dist", "data"],
+  "files": [
+    "dist",
+    "data"
+  ],
   "dependencies": {},
   "scripts": {
     "build": "tsup"
@@ -29,8 +32,20 @@
     "url": "git+https://github.com/BaimPriyatna/id-validator.git",
     "directory": "packages/data-id-address"
   },
-  "bugs": { "url": "https://github.com/BaimPriyatna/id-validator/issues" },
+  "bugs": {
+    "url": "https://github.com/BaimPriyatna/id-validator/issues"
+  },
   "homepage": "https://github.com/BaimPriyatna/id-validator#readme",
-  "keywords": ["id-validator", "indonesia", "kode-pos", "postal-code", "wilayah", "kecamatan", "address"],
-  "publishConfig": { "access": "public" }
+  "keywords": [
+    "id-validator",
+    "indonesia",
+    "kode-pos",
+    "postal-code",
+    "wilayah",
+    "kecamatan",
+    "address"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
 }

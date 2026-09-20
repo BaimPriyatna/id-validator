@@ -1,6 +1,6 @@
 {
   "name": "id-validator-id",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Indonesia validators: NIK, NPWP, SIM, Passport, Postal Code, License Plate, plus global Phone/Email",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -19,9 +19,9 @@
     "data"
   ],
   "dependencies": {
-    "@id-validator/core": "1.0.0",
-    "@id-validator/global-phone": "1.0.0",
-    "@id-validator/global-email": "1.0.0"
+    "@id-validator/core": "1.0.1",
+    "@id-validator/global-phone": "1.0.1",
+    "@id-validator/global-email": "1.0.1"
   },
   "scripts": {
     "build": "tsup"

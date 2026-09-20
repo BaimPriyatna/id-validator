@@ -5,7 +5,7 @@
 [![CI](https://github.com/BaimPriyatna/id-validator/actions/workflows/ci.yml/badge.svg)](https://github.com/BaimPriyatna/id-validator/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Node.js 18+](https://img.shields.io/badge/node-%3E%3D18-brightgreen.svg)](package.json)
-[![Version](https://img.shields.io/badge/version-1.0.0-informational.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.0.1-informational.svg)](CHANGELOG.md)
 
 One API style. Many countries. Local validation. No network.
 
