@@ -1,4 +1,5 @@
 import type { ValidationResult } from "@id-validator/core";
+import { ensureValidInput } from "@id-validator/core";
 import { phone as globalPhone } from "@id-validator/global-phone";
 import type { ParsedPhone } from "@id-validator/global-phone";
 
@@ -30,8 +31,17 @@ function normalize(input: string): string {
   return globalPhone.normalize(toInternational(input));
 }
 
-function validate(input: string): ValidationResult<string> {
-  return globalPhone.validate(toInternational(input));
+function validate(input: unknown): ValidationResult<string> {
+  // Same type/length guard as every other validator — this wrapper does
+  // its own string preprocessing (toInternational) before delegating to
+  // globalPhone.validate(), so it needs the same runtime safety globalPhone
+  // itself applies internally; skipping it here would let a non-string
+  // reach toInternational()'s .trim() call directly.
+  const safeInput = ensureValidInput(input);
+  if (typeof safeInput !== "string") {
+    return safeInput;
+  }
+  return globalPhone.validate(toInternational(safeInput));
 }
 
 function parse(input: string): ParsedPhone {
@@ -47,8 +57,7 @@ function format(input: string): string {
  * Use validate() if you need error details.
  */
 function isValid(input: unknown): boolean {
-  if (typeof input !== "string") return false;
-  return globalPhone.validate(toInternational(input)).valid;
+  return validate(input).valid;
 }
 
 export const phone = { validate, normalize, parse, format, isValid };

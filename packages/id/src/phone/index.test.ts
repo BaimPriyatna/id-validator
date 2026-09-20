@@ -27,6 +27,44 @@ describe("phone.validate (Indonesia-aware)", () => {
   });
 });
 
+describe("phone.validate (Indonesia-aware) - input safety", () => {
+  it("rejects null", () => {
+    const result = phone.validate(null);
+    expect(result.valid).toBe(false);
+    expect(result.errors[0].code).toBe("REQUIRED");
+  });
+
+  it("rejects undefined", () => {
+    const result = phone.validate(undefined);
+    expect(result.valid).toBe(false);
+    expect(result.errors[0].code).toBe("REQUIRED");
+  });
+
+  it("rejects number type without throwing", () => {
+    const result = phone.validate(628123456789);
+    expect(result.valid).toBe(false);
+    expect(result.errors[0].code).toBe("INVALID_TYPE");
+  });
+
+  it("rejects boolean type without throwing", () => {
+    const result = phone.validate(true);
+    expect(result.valid).toBe(false);
+    expect(result.errors[0].code).toBe("INVALID_TYPE");
+  });
+
+  it("rejects object type without throwing", () => {
+    const result = phone.validate({ number: "08123456789" });
+    expect(result.valid).toBe(false);
+    expect(result.errors[0].code).toBe("INVALID_TYPE");
+  });
+
+  it("rejects array type without throwing", () => {
+    const result = phone.validate(["08123456789"]);
+    expect(result.valid).toBe(false);
+    expect(result.errors[0].code).toBe("INVALID_TYPE");
+  });
+});
+
 describe("phone.normalize (Indonesia-aware)", () => {
   it("converts leading 0 to +62", () => {
     expect(phone.normalize("0812-3456-789")).toBe("+628123456789");
