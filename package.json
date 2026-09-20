@@ -1,0 +1,41 @@
+{
+  "name": "id-validator-monorepo",
+  "private": true,
+  "type": "module",
+  "description": "ID Validator ecosystem - TypeScript validation/normalization/parsing/formatting library, country packages + shared core/global rules",
+  "workspaces": [
+    "packages/core",
+    "packages/global/*",
+    "packages/id",
+    "packages/data-id-address"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces --if-present",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "typecheck": "tsc -b --noEmit",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "clean": "npm run clean --workspaces --if-present"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.15.0",
+    "@vitest/coverage-v8": "^2.1.0",
+    "eslint": "^9.15.0",
+    "tsup": "8.5.1",
+    "typescript": "^5.6.0",
+    "typescript-eslint": "^8.14.0",
+    "vitest": "^2.1.0"
+  },
+  "version": "1.0.0",
+  "license": "MIT",
+  "author": "BaimPriyatna",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BaimPriyatna/id-validator.git"
+  }
+}

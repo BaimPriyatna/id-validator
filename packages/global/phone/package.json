@@ -1,0 +1,50 @@
+{
+  "name": "@id-validator/global-phone",
+  "version": "1.0.0",
+  "description": "Global phone validator, reused across country packages",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "sideEffects": false,
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "@id-validator/core": "1.0.0"
+  },
+  "scripts": {
+    "build": "tsup"
+  },
+  "devDependencies": {
+    "tsup": "^8.3.0"
+  },
+  "license": "MIT",
+  "author": "BaimPriyatna",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BaimPriyatna/id-validator.git",
+    "directory": "packages/global/phone"
+  },
+  "bugs": {
+    "url": "https://github.com/BaimPriyatna/id-validator/issues"
+  },
+  "homepage": "https://github.com/BaimPriyatna/id-validator#readme",
+  "keywords": [
+    "typescript",
+    "validation",
+    "id-validator",
+    "phone",
+    "e164"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
+}

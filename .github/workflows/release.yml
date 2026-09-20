@@ -1,0 +1,52 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+          cache: npm
+          registry-url: https://registry.npmjs.org
+      - run: npm ci
+      - run: npm run build
+      - run: npm test
+      - name: Typecheck each package
+        run: |
+          for p in packages/core packages/global/phone packages/global/email packages/id packages/data-id-address; do
+            (cd "$p" && npx tsc --noEmit -p tsconfig.json)
+          done
+      # Publish in dependency order so a package never publishes before the
+      # workspace dep it requires is already on the registry. --provenance
+      # uses the id-token permission above to attach a signed attestation
+      # (visible as a "Provenance" badge on the npm package page) linking
+      # each published tarball back to this exact workflow run and commit.
+      - name: Publish @id-validator/core
+        run: npm publish --workspace packages/core --access public --provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Publish global modules
+        run: |
+          npm publish --workspace packages/global/phone --access public --provenance
+          npm publish --workspace packages/global/email --access public --provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Publish id-validator-id
+        run: npm publish --workspace packages/id --provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Publish optional data package
+        run: npm publish --workspace packages/data-id-address --access public --provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
