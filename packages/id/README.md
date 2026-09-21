@@ -1,4 +1,4 @@
-# id-validator-id
+# idvalidator-id
 
 Validators for Indonesia-specific structured data, plus the global
 Phone/Email validators, following the id-validator ecosystem's domain-first
@@ -6,7 +6,7 @@ API: `domain.validate()`, `.normalize()`, `.parse()`, `.format()` (only
 where meaningful for that data type).
 
 ```bash
-npm install id-validator-id
+npm install idvalidator-id
 ```
 
 ## Important
@@ -21,7 +21,7 @@ per-validator limitations.
 ## Usage
 
 ```ts
-import { nik, npwp, phone, postalCode, licensePlate, sim, passport } from "id-validator-id";
+import { nik, npwp, phone, postalCode, licensePlate, sim, passport } from "idvalidator-id";
 
 nik.validate("3171051708900001");
 // { valid: true, errors: [], value: "3171051708900001" }

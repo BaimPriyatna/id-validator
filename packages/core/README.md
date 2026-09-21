@@ -6,7 +6,7 @@ Core types, error contracts, validation results, and input normalization primiti
 npm install @idvalidator/core
 ```
 
-This package serves as the shared foundation for all `id-validator` country and global modules (e.g. `id-validator-id`, `@idvalidator/global-phone`, `@idvalidator/global-email`). It can also be consumed directly if you are authoring custom validators conforming to the `id-validator` architecture.
+This package serves as the shared foundation for all `id-validator` country and global modules (e.g. `idvalidator-id`, `@idvalidator/global-phone`, `@idvalidator/global-email`). It can also be consumed directly if you are authoring custom validators conforming to the `id-validator` architecture.
 
 ---
 

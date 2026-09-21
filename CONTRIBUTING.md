@@ -64,7 +64,7 @@ Every validator must:
    ```
 4. Pushing the tag triggers `.github/workflows/release.yml`, which builds,
    tests, typechecks, and publishes `@idvalidator/core` ->
-   `@idvalidator/global-phone`/`global-email` -> `id-validator-id` ->
+   `@idvalidator/global-phone`/`global-email` -> `idvalidator-id` ->
    `@idvalidator/data-id-address`, in that order (a package is never
    published before a workspace dependency it needs is already live), with
    `--provenance` attestation attached to each.
@@ -84,13 +84,13 @@ npm test
 npm publish --workspace packages/core --access public
 npm publish --workspace packages/global/phone --access public
 npm publish --workspace packages/global/email --access public
-npm publish --workspace packages/id
+npm publish --workspace packages/id --access public
 npm publish --workspace packages/data-id-address --access public
 ```
 
 ### Before the very first release
 
-- Confirm the target npm account/org actually owns `id-validator-id` and the
+- Confirm the target npm account/org actually owns `idvalidator-id` and the
   `@idvalidator` scope.
 - Double check `npm pack --dry-run` in each package you're about to publish;
   it should only list `dist/`, `data/` (where present), and `README.md`.

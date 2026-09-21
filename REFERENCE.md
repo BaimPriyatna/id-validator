@@ -15,7 +15,7 @@ validator is implemented, following this template:
 
 ---
 
-<!-- Indonesia (id-validator-id) -->
+<!-- Indonesia (idvalidator-id) -->
 ## nik
 - **API:** `.validate()`, `.normalize()`, `.parse()`, `.format()`
 - **What it validates:** 16-digit structure; province and regency/city codes checked against real Kemendagri data (`data/regions.json`, Kepmendagri No. 300.2.2-2430/2025, 38 provinces / 514 regencies — see file for source); district (kecamatan) code only checked as "not 00" in the core validator (no kecamatan-level dataset is bundled here — see `@idvalidator/data-id-address` below for real district-code lookup/validation); day/month-of-birth range (incl. female +40 offset); sequence non-zero
@@ -52,9 +52,9 @@ validator is implemented, following this template:
 - **API:** `.validate()`, `.normalize()`, `.parse()`, `.format()`
 - **What it validates:** E.164 structure (`+` + 8–15 digits) against a known country-calling-code table
 - **What it does NOT validate:** that the number is active, assigned, or reachable
-- **Note:** this is the country-agnostic global module — it requires an explicit `+<calling code>`. It does NOT guess a country from a bare local number like `08123456789`. `id-validator-id`'s `phone` (below) wraps this with Indonesia-specific normalization.
+- **Note:** this is the country-agnostic global module — it requires an explicit `+<calling code>`. It does NOT guess a country from a bare local number like `08123456789`. `idvalidator-id`'s `phone` (below) wraps this with Indonesia-specific normalization.
 
-## phone (`id-validator-id`, wraps global `phone`)
+## phone (`idvalidator-id`, wraps global `phone`)
 - **API:** `.validate()`, `.normalize()`, `.parse()`, `.format()`
 - **What it adds over the global module:** accepts common Indonesian input shapes before delegating — `08123456789` (local format), `628123456789` (no leading `+`), and separators (`-`, `.`, spaces, parens) in any of these — normalizing all of them to `+62...` and then running the same E.164 checks as the global module.
 - **What it does NOT validate:** same limits as the global `phone` module (not active/assigned/reachable); does not identify whether a normalized number is actually a valid Indonesian mobile prefix (e.g. `8xx`) vs. landline — any digit string long enough after `62` passes.
@@ -74,7 +74,7 @@ All validators support per-call custom error message overrides via an optional `
 ### Quick Example
 
 ```typescript
-import { nik } from 'id-validator-id';
+import { nik } from 'idvalidator-id';
 
 // Use custom messages (e.g., for localization)
 const result = nik.validate('123', {

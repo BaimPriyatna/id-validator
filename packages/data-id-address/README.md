@@ -1,7 +1,7 @@
 # @idvalidator/data-id-address
 
 Optional Indonesia address reference data for use alongside
-`id-validator-id`: full province/regency/district hierarchy (with names)
+`idvalidator-id`: full province/regency/district hierarchy (with names)
 and a postal-code -> district reverse index. Kept separate on purpose —
 see "Why a separate package" below.
 
@@ -10,7 +10,7 @@ npm install @idvalidator/data-id-address
 ```
 
 ```ts
-import { nik, postalCode } from "id-validator-id";
+import { nik, postalCode } from "idvalidator-id";
 import { resolveAddress, lookupPostalCode } from "@idvalidator/data-id-address";
 
 // Resolve a NIK's codes to real province/regency/district names
@@ -40,7 +40,7 @@ if (postalCode.validate(code).valid) {
 
 ## Why a separate package
 
-`id-validator-id`'s core `nik` and `postalCode` validators already embed a
+`idvalidator-id`'s core `nik` and `postalCode` validators already embed a
 small province+regency dataset (enough to validate those two levels — see
 [REFERENCE.md](https://github.com/BaimPriyatna/id-validator/blob/main/REFERENCE.md)). Full district-level names (7,265 entries) and the
 postal reverse index push that past a reasonable default-bundle size (PRD

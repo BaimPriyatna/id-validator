@@ -78,7 +78,7 @@ export function lookupDistrict(
  * Composes the three lookups above into full names for a code chain — the
  * intended way to turn the raw codes returned by nik.parse() (or a
  * lookupPostalCode() match) into a human-readable address. districtCode is
- * optional since nik.parse() always returns one but id-validator-id's own
+ * optional since nik.parse() always returns one but idvalidator-id's own
  * validate() only checks it's not "00" (no district-level dataset is
  * bundled in the core package) — this package is how you get a real check.
  */

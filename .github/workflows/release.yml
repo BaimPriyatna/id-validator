@@ -42,8 +42,8 @@ jobs:
           npm publish --workspace packages/global/email --access public --provenance
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - name: Publish id-validator-id
-        run: npm publish --workspace packages/id --provenance
+      - name: Publish idvalidator-id
+        run: npm publish --workspace packages/id --access public --provenance
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Publish optional data package

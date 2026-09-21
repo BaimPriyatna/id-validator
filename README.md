@@ -10,11 +10,11 @@
 One API style. Many countries. Local validation. No network.
 
 ```bash
-npm install id-validator-id
+npm install idvalidator-id
 ```
 
 ```ts
-import { nik, npwp, phone, postalCode, licensePlate } from "id-validator-id";
+import { nik, npwp, phone, postalCode, licensePlate } from "idvalidator-id";
 
 const result = nik.validate(input);
 if (result.valid) {
@@ -77,7 +77,7 @@ if (result.valid) {
 - **Shared global rules** — data that isn't tied to one country (phone,
   email) is implemented once in `packages/global/*` and reused across
   country packages.
-- **Independent packages** — installing `id-validator-id` doesn't pull in
+- **Independent packages** — installing `idvalidator-id` doesn't pull in
   unrelated countries, and country packages never depend on each other.
 
 Full design rationale, the validation pipeline, and the error model are in
@@ -92,7 +92,7 @@ what each one does and does **not** check, is in
 | Package | Scope |
 | --- | --- |
 | `@idvalidator/core` | Shared types, result/error model, normalization primitives |
-| `id-validator-id` | Indonesia: NIK, NPWP, SIM, Passport, Postal Code, License Plate, Phone, Email |
+| `idvalidator-id` | Indonesia: NIK, NPWP, SIM, Passport, Postal Code, License Plate, Phone, Email |
 | `@idvalidator/global-phone` | E.164 phone validation, reused by every country package |
 | `@idvalidator/global-email` | Structural email validation, reused by every country package |
 | `@idvalidator/data-id-address` *(optional)* | Indonesia province/regency/district/postal/plate-region reference data — see [Known Limitations](#known-limitations) |
@@ -149,7 +149,7 @@ id-validator/
     ├── global/
     │   ├── phone/                # @idvalidator/global-phone
     │   └── email/                # @idvalidator/global-email
-    ├── id/                       # id-validator-id
+    ├── id/                       # idvalidator-id
     └── data-id-address/          # @idvalidator/data-id-address (optional)
 ```
 
@@ -166,7 +166,7 @@ id-validator/
   vehicle plate region-code lookup (`lookupPlateRegion`) is the one
   exception: it's **community-sourced, not official**, since no
   machine-readable Korlantas/Polri dataset is known to exist.
-- Only Indonesia (`id-validator-id`) is implemented so far.
+- Only Indonesia (`idvalidator-id`) is implemented so far.
 
 ---
 

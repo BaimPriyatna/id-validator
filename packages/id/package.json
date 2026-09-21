@@ -1,5 +1,5 @@
 {
-  "name": "id-validator-id",
+  "name": "idvalidator-id",
   "version": "1.0.1",
   "description": "Indonesia validators: NIK, NPWP, SIM, Passport, Postal Code, License Plate, plus global Phone/Email",
   "type": "module",

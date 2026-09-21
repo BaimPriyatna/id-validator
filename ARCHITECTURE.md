@@ -24,7 +24,7 @@ The architecture separates shared functionality, country-specific functionality,
                     +-----------------------------+
                     |      Country Package        |
                     |                             |
-                    |  id-validator-id            |
+                    |  idvalidator-id            |
                     |  id-validator-us            |
                     |  id-validator-my            |
                     |  ...                        |
@@ -120,7 +120,7 @@ Global validators are implemented independently so that country packages can reu
 ```
 global/phone
        |
-       +-- id-validator-id
+       +-- idvalidator-id
        +-- id-validator-us
        +-- id-validator-my
        +-- id-validator-sg
@@ -133,7 +133,7 @@ A country package may expose relevant global validators as part of its public AP
 Each country package contains validators and data specific to that country, for example:
 
 ```
-id-validator-id
+idvalidator-id
 ├── NIK
 ├── NPWP
 ├── SIM
@@ -141,7 +141,7 @@ id-validator-id
 └── (relevant global validators)
 ```
 
-A country package should not contain unrelated country logic. Indonesian-specific rules belong to `id-validator-id`; United States-specific rules belong to `id-validator-us`.
+A country package should not contain unrelated country logic. Indonesian-specific rules belong to `idvalidator-id`; United States-specific rules belong to `id-validator-us`.
 
 Country packages may depend on:
 
@@ -273,7 +273,7 @@ The following dependency patterns are not allowed:
 
 ```
 Core -----> Country Package         (not allowed)
-id-validator-id --> id-validator-us (not allowed)
+idvalidator-id --> id-validator-us (not allowed)
 Country A --> Country B             (not allowed)
 ```
 

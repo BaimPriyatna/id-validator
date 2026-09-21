@@ -49,7 +49,7 @@ if (phone.isValid("+6281234567890")) {
 }
 ```
 
-> **Note**: For country-specific handling that automatically assumes local prefixes (e.g. converting bare `0812...` into `+62812...`), use the respective country package such as `id-validator-id`.
+> **Note**: For country-specific handling that automatically assumes local prefixes (e.g. converting bare `0812...` into `+62812...`), use the respective country package such as `idvalidator-id`.
 
 ---
 
