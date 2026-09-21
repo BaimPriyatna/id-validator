@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.2] - 2026-09-21
+
+### Changed
+
+- Version bump only — `@idvalidator/core`, `@idvalidator/global-phone`,
+  and `@idvalidator/global-email` at `1.0.1` are already published to
+  npm and a version number can never be reused once published, so this
+  bump was required to ship the `idvalidator-id` rename and the
+  `release.yml` `--access public` fix below (both first appear in this
+  version, not 1.0.1).
+- `id-validator-id` renamed to `idvalidator-id` (to match the `@idvalidator`
+  scope rename in 1.0.1). Separately, `id-validator-id` had also become
+  blocked as a name: an earlier manual publish/unpublish cycle removed
+  every version of it from the registry, which triggers npm's policy
+  that a fully-unpublished package name cannot be republished for 28
+  days. Renaming sidesteps the wait entirely.
+
+### Fixed
+
+- `.github/workflows/release.yml`: the `idvalidator-id` (formerly
+  `id-validator-id`) publish step was missing `--access public`. This
+  isn't optional for a new package when `--provenance` is also used,
+  even for an unscoped package (which is otherwise public by default
+  without the flag) — npm refuses to generate a provenance attestation
+  without an explicit access level. This was the actual cause of the
+  first `v1.0.1` release run failing at that step.
+
 ## [1.0.1] - 2026-09-20
 
 ### Changed
@@ -12,23 +39,9 @@ All notable changes to this project will be documented in this file.
   `@id-validator` npm organization name became unavailable after being
   deleted and re-registration was blocked by npm's name-reuse hold, with
   no published timeline for release.
-- The main package renamed from `id-validator-id` to `idvalidator-id`
-  (for consistency with the scope rename above). Separately, that name
-  became blocked too: an earlier manual publish/unpublish cycle removed
-  every version of `id-validator-id` from the registry, which triggers
-  npm's policy that a fully-unpublished package name cannot be
-  republished for 28 days. Renaming avoided the wait. Nothing under
-  either old name (`@id-validator/*` or `id-validator-id`) is depended on
-  by any real consumer, so neither rename is a breaking change.
 
 ### Fixed
 
-- `.github/workflows/release.yml`: the `idvalidator-id` publish step was
-  missing `--access public`. This isn't optional for a new package when
-  `--provenance` is also used, even for an unscoped package (which is
-  otherwise public by default without the flag) — npm refuses to
-  generate a provenance attestation without an explicit access level.
-  This was the actual cause of the release workflow failing at that step.
 - `idvalidator-id`'s `phone.validate()` could throw a raw `TypeError` on
   non-string input (number, boolean, object, array) instead of returning a
   proper `ValidationResult`. `isValid()` already guarded against this via
