@@ -1,4 +1,4 @@
-# @id-validator/data-id-address
+# @idvalidator/data-id-address
 
 Optional Indonesia address reference data for use alongside
 `id-validator-id`: full province/regency/district hierarchy (with names)
@@ -6,12 +6,12 @@ and a postal-code -> district reverse index. Kept separate on purpose —
 see "Why a separate package" below.
 
 ```bash
-npm install @id-validator/data-id-address
+npm install @idvalidator/data-id-address
 ```
 
 ```ts
 import { nik, postalCode } from "id-validator-id";
-import { resolveAddress, lookupPostalCode } from "@id-validator/data-id-address";
+import { resolveAddress, lookupPostalCode } from "@idvalidator/data-id-address";
 
 // Resolve a NIK's codes to real province/regency/district names
 const parsed = nik.parse("3171051708900001");

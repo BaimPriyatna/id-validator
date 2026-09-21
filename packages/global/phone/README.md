@@ -1,9 +1,9 @@
-# @id-validator/global-phone
+# @idvalidator/global-phone
 
 International phone number validator conforming to ITU-T E.164 standards and ISO country calling codes.
 
 ```bash
-npm install @id-validator/global-phone
+npm install @idvalidator/global-phone
 ```
 
 This package validates, normalizes, parses, and formats international phone numbers. It is used as the global phone validation engine across country packages in the `id-validator` ecosystem, but can also be used as a standalone international phone validator.
@@ -22,7 +22,7 @@ This package validates, normalizes, parses, and formats international phone numb
 ## Usage
 
 ```ts
-import { phone } from "@id-validator/global-phone";
+import { phone } from "@idvalidator/global-phone";
 
 // 1. Validate
 const result = phone.validate("+62 812-3456-7890");

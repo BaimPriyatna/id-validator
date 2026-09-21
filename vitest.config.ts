@@ -25,7 +25,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      "@id-validator/core": new URL("./packages/core/src/index.ts", import.meta.url).pathname,
+      "@idvalidator/core": new URL("./packages/core/src/index.ts", import.meta.url).pathname,
     },
   },
 });

@@ -32,7 +32,7 @@ jobs:
       # uses the id-token permission above to attach a signed attestation
       # (visible as a "Provenance" badge on the npm package page) linking
       # each published tarball back to this exact workflow run and commit.
-      - name: Publish @id-validator/core
+      - name: Publish @idvalidator/core
         run: npm publish --workspace packages/core --access public --provenance
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

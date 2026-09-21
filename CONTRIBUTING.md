@@ -4,7 +4,7 @@
 
 Every validator must:
 - Follow the domain-first API (`domain.validate()`, `.normalize()`, `.parse()`, `.format()` as relevant).
-- Return `ValidationResult<T>` from `@id-validator/core`.
+- Return `ValidationResult<T>` from `@idvalidator/core`.
 - Use machine-readable error `code`s, not just messages.
 - Ship valid-case, invalid-case, normalization, and regression tests.
 - Document what it validates and, explicitly, what it does NOT validate.
@@ -12,7 +12,7 @@ Every validator must:
 ## Adding a country package
 
 - One country = one package (`id-validator-<cc>`).
-- Depend only on `@id-validator/core` and `packages/global/*`.
+- Depend only on `@idvalidator/core` and `packages/global/*`.
 - Never depend on another country package.
 
 ## Adding/updating reference data
@@ -31,7 +31,7 @@ Every validator must:
 
 1. Create an npm Organization named exactly `id-validator` (npmjs.com ->
    profile -> Add Organization -> free plan) if it doesn't exist yet —
-   the `@id-validator/*` scope requires an org or user account with that
+   the `@idvalidator/*` scope requires an org or user account with that
    exact name.
 2. Create an npm **Granular Access Token** (classic/Automation tokens were
    removed by npm on 2025-11-05 — granular is the only option now):
@@ -63,9 +63,9 @@ Every validator must:
    git push origin main --tags
    ```
 4. Pushing the tag triggers `.github/workflows/release.yml`, which builds,
-   tests, typechecks, and publishes `@id-validator/core` ->
-   `@id-validator/global-phone`/`global-email` -> `id-validator-id` ->
-   `@id-validator/data-id-address`, in that order (a package is never
+   tests, typechecks, and publishes `@idvalidator/core` ->
+   `@idvalidator/global-phone`/`global-email` -> `id-validator-id` ->
+   `@idvalidator/data-id-address`, in that order (a package is never
    published before a workspace dependency it needs is already live), with
    `--provenance` attestation attached to each.
 
@@ -91,6 +91,6 @@ npm publish --workspace packages/data-id-address --access public
 ### Before the very first release
 
 - Confirm the target npm account/org actually owns `id-validator-id` and the
-  `@id-validator` scope.
+  `@idvalidator` scope.
 - Double check `npm pack --dry-run` in each package you're about to publish;
   it should only list `dist/`, `data/` (where present), and `README.md`.

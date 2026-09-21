@@ -1,5 +1,5 @@
 {
-  "name": "@id-validator/data-id-address",
+  "name": "@idvalidator/data-id-address",
   "version": "1.0.1",
   "description": "Optional Indonesia address reference data: province/regency/district hierarchy + postal-code reverse index, for use alongside id-validator-id",
   "type": "module",

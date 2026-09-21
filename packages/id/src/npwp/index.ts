@@ -1,5 +1,5 @@
-import type { ValidationError, ValidationResult } from "@id-validator/core";
-import { CoreErrorCode, makeError, digitsOnly, ensureValidInput } from "@id-validator/core";
+import type { ValidationError, ValidationResult } from "@idvalidator/core";
+import { CoreErrorCode, makeError, digitsOnly, ensureValidInput } from "@idvalidator/core";
 import { nik } from "../nik/index.js";
 
 export interface ParsedNpwp {

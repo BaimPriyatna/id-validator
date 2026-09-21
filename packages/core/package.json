@@ -1,5 +1,5 @@
 {
-  "name": "@id-validator/core",
+  "name": "@idvalidator/core",
   "version": "1.0.1",
   "description": "Shared types, result/error model, and normalization primitives for the id-validator ecosystem",
   "type": "module",

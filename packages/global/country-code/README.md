@@ -1,3 +1,3 @@
-# @id-validator/global-country-code
+# @idvalidator/global-country-code
 
 Planned, not implemented in v1. See PRD §26 "Future Features".

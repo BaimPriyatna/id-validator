@@ -1,5 +1,5 @@
 {
-  "name": "@id-validator/global-phone",
+  "name": "@idvalidator/global-phone",
   "version": "1.0.1",
   "description": "Global phone validator, reused across country packages",
   "type": "module",
@@ -18,7 +18,7 @@
     "dist"
   ],
   "dependencies": {
-    "@id-validator/core": "1.0.1"
+    "@idvalidator/core": "1.0.1"
   },
   "scripts": {
     "build": "tsup"

@@ -1,1 +1,1 @@
-export { email } from "@id-validator/global-email";
+export { email } from "@idvalidator/global-email";

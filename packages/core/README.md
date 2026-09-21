@@ -1,12 +1,12 @@
-# @id-validator/core
+# @idvalidator/core
 
 Core types, error contracts, validation results, and input normalization primitives for the `id-validator` ecosystem.
 
 ```bash
-npm install @id-validator/core
+npm install @idvalidator/core
 ```
 
-This package serves as the shared foundation for all `id-validator` country and global modules (e.g. `id-validator-id`, `@id-validator/global-phone`, `@id-validator/global-email`). It can also be consumed directly if you are authoring custom validators conforming to the `id-validator` architecture.
+This package serves as the shared foundation for all `id-validator` country and global modules (e.g. `id-validator-id`, `@idvalidator/global-phone`, `@idvalidator/global-email`). It can also be consumed directly if you are authoring custom validators conforming to the `id-validator` architecture.
 
 ---
 
@@ -24,8 +24,8 @@ This package serves as the shared foundation for all `id-validator` country and 
 ### Result & Error Types
 
 ```ts
-import type { ValidationResult, ValidationError, ValidationOptions } from "@id-validator/core";
-import { CoreErrorCode, makeError } from "@id-validator/core";
+import type { ValidationResult, ValidationError, ValidationOptions } from "@idvalidator/core";
+import { CoreErrorCode, makeError } from "@idvalidator/core";
 
 function myCustomValidator(input: unknown): ValidationResult<string> {
   if (typeof input !== "string" || !input.trim()) {
@@ -52,7 +52,7 @@ import {
   hasNonAscii, 
   isSafeInputLength,
   MAX_SAFE_INPUT_LENGTH 
-} from "@id-validator/core";
+} from "@idvalidator/core";
 
 // Strip non-digit characters
 digitsOnly("0812-3456-789"); // "08123456789"

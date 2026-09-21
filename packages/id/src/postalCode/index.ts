@@ -1,5 +1,5 @@
-import type { ValidationResult } from "@id-validator/core";
-import { CoreErrorCode, makeError, digitsOnly, ensureValidInput } from "@id-validator/core";
+import type { ValidationResult } from "@idvalidator/core";
+import { CoreErrorCode, makeError, digitsOnly, ensureValidInput } from "@idvalidator/core";
 
 const POSTAL_CODE_LENGTH = 5;
 

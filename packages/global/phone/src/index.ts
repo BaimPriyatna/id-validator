@@ -1,5 +1,5 @@
-import type { ValidationResult } from "@id-validator/core";
-import { CoreErrorCode, makeError, digitsOnly, ensureValidInput, hasNonAscii } from "@id-validator/core";
+import type { ValidationResult } from "@idvalidator/core";
+import { CoreErrorCode, makeError, digitsOnly, ensureValidInput, hasNonAscii } from "@idvalidator/core";
 import { matchCallingCode } from "./callingCodes.js";
 
 export interface ParsedPhone {

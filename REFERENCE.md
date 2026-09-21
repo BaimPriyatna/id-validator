@@ -18,9 +18,9 @@ validator is implemented, following this template:
 <!-- Indonesia (id-validator-id) -->
 ## nik
 - **API:** `.validate()`, `.normalize()`, `.parse()`, `.format()`
-- **What it validates:** 16-digit structure; province and regency/city codes checked against real Kemendagri data (`data/regions.json`, Kepmendagri No. 300.2.2-2430/2025, 38 provinces / 514 regencies — see file for source); district (kecamatan) code only checked as "not 00" in the core validator (no kecamatan-level dataset is bundled here — see `@id-validator/data-id-address` below for real district-code lookup/validation); day/month-of-birth range (incl. female +40 offset); sequence non-zero
+- **What it validates:** 16-digit structure; province and regency/city codes checked against real Kemendagri data (`data/regions.json`, Kepmendagri No. 300.2.2-2430/2025, 38 provinces / 514 regencies — see file for source); district (kecamatan) code only checked as "not 00" in the core validator (no kecamatan-level dataset is bundled here — see `@idvalidator/data-id-address` below for real district-code lookup/validation); day/month-of-birth range (incl. female +40 offset); sequence non-zero
 - **What it does NOT validate:** existence in Dukcapil's database; district-level code accuracy in the core package; century of birth year is a heuristic guess
-- **Name resolution:** `nik.parse()` returns raw codes only (no names). Pass them to `resolveAddress()` from the optional `@id-validator/data-id-address` package to get province/regency/district names — and to actually verify the district code, since the core package doesn't.
+- **Name resolution:** `nik.parse()` returns raw codes only (no names). Pass them to `resolveAddress()` from the optional `@idvalidator/data-id-address` package to get province/regency/district names — and to actually verify the district code, since the core package doesn't.
 
 ## npwp
 - **API:** `.validate()`, `.normalize()`, `.parse()`, `.format()`
@@ -40,13 +40,13 @@ validator is implemented, following this template:
 ## postalCode
 - **API:** `.validate()`, `.normalize()`
 - **What it validates:** 5 digits, first digit non-zero
-- **Not implemented directly:** `.parse()`, `.format()` — kept out of the core validator so the default bundle stays lean (PRD §18). For real postal->region resolution, use the separate, optional **`@id-validator/data-id-address`** package: `lookupPostalCode(code)` returns `{ provinceCode, regencyCode, districtCode }[]` (usually one match; ~7.5% of codes genuinely resolve to more than one district). Source: Kepmendagri No. 300.2.2-3128/2025, via github.com/cahyadsn/wilayah_kodepos (MIT).
+- **Not implemented directly:** `.parse()`, `.format()` — kept out of the core validator so the default bundle stays lean (PRD §18). For real postal->region resolution, use the separate, optional **`@idvalidator/data-id-address`** package: `lookupPostalCode(code)` returns `{ provinceCode, regencyCode, districtCode }[]` (usually one match; ~7.5% of codes genuinely resolve to more than one district). Source: Kepmendagri No. 300.2.2-3128/2025, via github.com/cahyadsn/wilayah_kodepos (MIT).
 
 ## licensePlate
 - **API:** `.validate()`, `.normalize()`, `.parse()`, `.format()`
 - **What it validates:** `[A-Z]{1,2} [1-9]\d{0,3} [A-Z]{0,3}` structural pattern (region, number, series)
 - **What it does NOT validate:** that the plate is currently issued/registered
-- **Region-code -> area name lookup:** available via the optional `@id-validator/data-id-address` package's `lookupPlateRegion(code)` — but flagged there as **community-sourced, not official** (unlike every other lookup in that package). Indonesian plate region codes are a Polri/Korlantas assignment with no known official machine-readable open dataset; this table was compiled from public news/automotive articles, which aren't always consistent with each other. Treat matches as a helpful hint, not a verified fact.
+- **Region-code -> area name lookup:** available via the optional `@idvalidator/data-id-address` package's `lookupPlateRegion(code)` — but flagged there as **community-sourced, not official** (unlike every other lookup in that package). Indonesian plate region codes are a Polri/Korlantas assignment with no known official machine-readable open dataset; this table was compiled from public news/automotive articles, which aren't always consistent with each other. Treat matches as a helpful hint, not a verified fact.
 
 ## phone (global)
 - **API:** `.validate()`, `.normalize()`, `.parse()`, `.format()`

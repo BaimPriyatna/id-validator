@@ -1,5 +1,5 @@
-import type { ValidationResult } from "@id-validator/core";
-import { CoreErrorCode, makeError, ensureValidInput } from "@id-validator/core";
+import type { ValidationResult } from "@idvalidator/core";
+import { CoreErrorCode, makeError, ensureValidInput } from "@idvalidator/core";
 
 /**
  * Indonesian e-passport numbers are commonly cited as 1 letter + 7 digits

@@ -30,7 +30,7 @@ nik.parse("3171051708900001");
 // { provinceCode: "31", regencyCode: "71", districtCode: "05",
 //   birthDate: "1990-08-17", gender: "male", sequence: "0001" }
 // For real province/regency/district names, pass these codes to
-// resolveAddress() from the optional @id-validator/data-id-address package.
+// resolveAddress() from the optional @idvalidator/data-id-address package.
 
 npwp.format("012345674000000");
 // "01.234.567.4-000.000"
@@ -46,8 +46,8 @@ postalCode.validate("40115");
 // { valid: true, errors: [], value: "40115" }
 
 // Optional: province/regency/district lookup for a postal code
-// npm install @id-validator/data-id-address
-// import { lookupPostalCode } from "@id-validator/data-id-address";
+// npm install @idvalidator/data-id-address
+// import { lookupPostalCode } from "@idvalidator/data-id-address";
 // lookupPostalCode("40115"); // [{ provinceCode: "32", regencyCode: "73", districtCode: "09" }]
 
 licensePlate.format("b1234xyz");
@@ -65,7 +65,7 @@ passport.validate("C1234567");    // heuristic 1-letter + 7-digit check
 | `npwp` | yes | yes | yes | yes | stable (legacy checksum is heuristic — see REFERENCE.md) |
 | `phone` (global) | yes | yes | yes | yes | stable |
 | `licensePlate` | yes | yes | yes | yes | stable |
-| `postalCode` | yes | yes | – | – | region lookup available via optional `@id-validator/data-id-address` package |
+| `postalCode` | yes | yes | – | – | region lookup available via optional `@idvalidator/data-id-address` package |
 | `sim` | yes | – | – | – | heuristic (no consolidated public spec) |
 | `passport` | yes | yes | – | – | heuristic (no consolidated public spec) |
 | `email` (global) | yes | yes | yes | – | stable |

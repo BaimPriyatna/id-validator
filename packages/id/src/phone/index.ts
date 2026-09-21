@@ -1,7 +1,7 @@
-import type { ValidationResult } from "@id-validator/core";
-import { ensureValidInput } from "@id-validator/core";
-import { phone as globalPhone } from "@id-validator/global-phone";
-import type { ParsedPhone } from "@id-validator/global-phone";
+import type { ValidationResult } from "@idvalidator/core";
+import { ensureValidInput } from "@idvalidator/core";
+import { phone as globalPhone } from "@idvalidator/global-phone";
+import type { ParsedPhone } from "@idvalidator/global-phone";
 
 const ID_CALLING_CODE = "62";
 

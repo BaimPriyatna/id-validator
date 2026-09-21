@@ -1,5 +1,5 @@
-import type { ValidationResult, ValidationOptions } from "@id-validator/core";
-import { CoreErrorCode, makeErrorWithOverride, ensureValidInput, hasNonAscii } from "@id-validator/core";
+import type { ValidationResult, ValidationOptions } from "@idvalidator/core";
+import { CoreErrorCode, makeErrorWithOverride, ensureValidInput, hasNonAscii } from "@idvalidator/core";
 
 export interface ParsedEmail {
   localPart: string;

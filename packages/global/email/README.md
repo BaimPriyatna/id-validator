@@ -1,9 +1,9 @@
-# @id-validator/global-email
+# @idvalidator/global-email
 
 Structural email validator and parser designed for real-world web and backend applications.
 
 ```bash
-npm install @id-validator/global-email
+npm install @idvalidator/global-email
 ```
 
 This package validates, normalizes, and parses email addresses according to realistic internet mail provider conventions (preventing common RFC 5322 edge-case issues while rejecting malformed inputs, spaces, emojis, and non-ASCII characters).
@@ -22,7 +22,7 @@ This package validates, normalizes, and parses email addresses according to real
 ## Usage
 
 ```ts
-import { email } from "@id-validator/global-email";
+import { email } from "@idvalidator/global-email";
 
 // 1. Validate
 const result = email.validate("User.Name@Example.COM");

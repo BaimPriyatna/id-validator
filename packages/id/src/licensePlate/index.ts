@@ -1,5 +1,5 @@
-import type { ValidationError, ValidationResult } from "@id-validator/core";
-import { CoreErrorCode, makeError, ensureValidInput } from "@id-validator/core";
+import type { ValidationError, ValidationResult } from "@idvalidator/core";
+import { CoreErrorCode, makeError, ensureValidInput } from "@idvalidator/core";
 
 export interface ParsedLicensePlate {
   regionCode: string;

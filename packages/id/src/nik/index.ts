@@ -1,5 +1,5 @@
-import type { ValidationError, ValidationResult, ValidationOptions } from "@id-validator/core";
-import { CoreErrorCode, makeErrorWithOverride, digitsOnly, ensureValidInput, hasNonAscii } from "@id-validator/core";
+import type { ValidationError, ValidationResult, ValidationOptions } from "@idvalidator/core";
+import { CoreErrorCode, makeErrorWithOverride, digitsOnly, ensureValidInput, hasNonAscii } from "@idvalidator/core";
 import regionsData from "../../data/regions.json";
 
 export interface ParsedNik {

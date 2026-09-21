@@ -56,7 +56,7 @@ if (result.valid) {
 ```
                     ID Validator
                          │
-                 @id-validator/core
+                 @idvalidator/core
                          │
             ┌────────────┴────────────┐
             │                         │
@@ -91,11 +91,11 @@ what each one does and does **not** check, is in
 
 | Package | Scope |
 | --- | --- |
-| `@id-validator/core` | Shared types, result/error model, normalization primitives |
+| `@idvalidator/core` | Shared types, result/error model, normalization primitives |
 | `id-validator-id` | Indonesia: NIK, NPWP, SIM, Passport, Postal Code, License Plate, Phone, Email |
-| `@id-validator/global-phone` | E.164 phone validation, reused by every country package |
-| `@id-validator/global-email` | Structural email validation, reused by every country package |
-| `@id-validator/data-id-address` *(optional)* | Indonesia province/regency/district/postal/plate-region reference data — see [Known Limitations](#known-limitations) |
+| `@idvalidator/global-phone` | E.164 phone validation, reused by every country package |
+| `@idvalidator/global-email` | Structural email validation, reused by every country package |
+| `@idvalidator/data-id-address` *(optional)* | Indonesia province/regency/district/postal/plate-region reference data — see [Known Limitations](#known-limitations) |
 
 ---
 
@@ -104,7 +104,7 @@ what each one does and does **not** check, is in
 | Domain | Status |
 | --- | --- |
 | `nik`, `npwp`, `phone`, `licensePlate` | fully implemented — validate/normalize/parse/format. `nik` checks province/regency codes against real Kemendagri data. |
-| `postalCode` | validate/normalize only — see `@id-validator/data-id-address` (optional) for province/regency/district lookup |
+| `postalCode` | validate/normalize only — see `@idvalidator/data-id-address` (optional) for province/regency/district lookup |
 | `sim`, `passport` | heuristic validate-only (no consolidated public spec) |
 | `email` (global) | fully implemented — validate/normalize/parse |
 
@@ -145,12 +145,12 @@ id-validator/
 ├── LICENSE
 ├── .github/workflows/    # CI (test) and release (publish) pipelines
 └── packages/
-    ├── core/                     # @id-validator/core
+    ├── core/                     # @idvalidator/core
     ├── global/
-    │   ├── phone/                # @id-validator/global-phone
-    │   └── email/                # @id-validator/global-email
+    │   ├── phone/                # @idvalidator/global-phone
+    │   └── email/                # @idvalidator/global-email
     ├── id/                       # id-validator-id
-    └── data-id-address/          # @id-validator/data-id-address (optional)
+    └── data-id-address/          # @idvalidator/data-id-address (optional)
 ```
 
 ---
@@ -161,7 +161,7 @@ id-validator/
   the core package — see the [Status](#status-v1) table and
   [REFERENCE.md](./REFERENCE.md) for why (bundle-size budget, or no official spec to
   validate against).
-- `@id-validator/data-id-address`'s province/regency/district/postal data
+- `@idvalidator/data-id-address`'s province/regency/district/postal data
   is sourced from official, MIT-licensed Kemendagri-aligned datasets. Its
   vehicle plate region-code lookup (`lookupPlateRegion`) is the one
   exception: it's **community-sourced, not official**, since no

@@ -13,7 +13,7 @@ All regular expressions used in the id-validator library have been audited for p
 
 ## Audited Regular Expressions
 
-### Core Package (`@id-validator/core`)
+### Core Package (`@idvalidator/core`)
 
 #### 1. Whitespace Stripping
 **Location:** `packages/core/src/normalize.ts`
@@ -51,7 +51,7 @@ All regular expressions used in the id-validator library have been audited for p
 
 ---
 
-### Email Validator (`@id-validator/global-email`)
+### Email Validator (`@idvalidator/global-email`)
 
 #### 5. Email Pattern
 **Location:** `packages/global/email/src/index.ts`
@@ -67,7 +67,7 @@ All regular expressions used in the id-validator library have been audited for p
 
 ---
 
-### Phone Validator (`@id-validator/global-phone`)
+### Phone Validator (`@idvalidator/global-phone`)
 
 #### 6. E.164 Pattern
 **Location:** `packages/global/phone/src/index.ts`
@@ -83,7 +83,7 @@ All regular expressions used in the id-validator library have been audited for p
 
 ---
 
-### NIK Validator (`@id-validator/id`)
+### NIK Validator (`@idvalidator/id`)
 
 #### 7. Digit Validation
 **Location:** `packages/id/src/nik/index.ts`
@@ -97,7 +97,7 @@ All regular expressions used in the id-validator library have been audited for p
 
 ---
 
-### Passport Validator (`@id-validator/id`)
+### Passport Validator (`@idvalidator/id`)
 
 #### 8. Passport Pattern
 **Location:** `packages/id/src/passport/index.ts`
@@ -112,7 +112,7 @@ All regular expressions used in the id-validator library have been audited for p
 
 ---
 
-### License Plate Validator (`@id-validator/id`)
+### License Plate Validator (`@idvalidator/id`)
 
 #### 9. License Plate Pattern
 **Location:** `packages/id/src/licensePlate/index.ts`
@@ -129,7 +129,7 @@ All regular expressions used in the id-validator library have been audited for p
 
 ---
 
-### Postal Code Validator (`@id-validator/id`)
+### Postal Code Validator (`@idvalidator/id`)
 
 #### 10. Postal Code Pattern
 **Location:** `packages/id/src/postalCode/index.ts`

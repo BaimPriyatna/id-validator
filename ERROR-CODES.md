@@ -6,7 +6,7 @@ This document consolidates all error codes used across the id-validator library 
 
 Error codes in this library follow a **stable contract**:
 
-- **Core error codes** (defined in `@id-validator/core`) are **stable** and will not be removed or have their meaning changed in minor or patch releases
+- **Core error codes** (defined in `@idvalidator/core`) are **stable** and will not be removed or have their meaning changed in minor or patch releases
 - **Domain-specific error codes** (specific to validators like NIK, NPWP, phone) are **stable** once introduced
 - New error codes may be added in minor releases
 - Error code removal or semantic changes require a major version bump
@@ -14,7 +14,7 @@ Error codes in this library follow a **stable contract**:
 
 ## Core Error Codes
 
-These codes are defined in `@id-validator/core` and used across all validators:
+These codes are defined in `@idvalidator/core` and used across all validators:
 
 ### `REQUIRED`
 **Status:** Stable  
