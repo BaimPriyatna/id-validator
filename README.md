@@ -34,6 +34,7 @@ if (result.valid) {
 - [Development](#development)
 - [Project Structure](#project-structure)
 - [Known Limitations](#known-limitations)
+- [Compatibility](#compatibility)
 - [Roadmap](#roadmap)
 - [License](#license)
 
@@ -166,7 +167,31 @@ id-validator/
   vehicle plate region-code lookup (`lookupPlateRegion`) is the one
   exception: it's **community-sourced, not official**, since no
   machine-readable Korlantas/Polri dataset is known to exist.
+- **Tree-shaking works at the package level only, not per-validator.**
+  `idvalidator-id` bundles all of its validators into a single
+  `dist/index.js`. Importing just one validator (e.g. `import { postalCode }
+  from "idvalidator-id"`) does not let a bundler (esbuild, webpack, etc.)
+  exclude another validator's code or data from the final bundle —
+  verified empirically: a bundle built from `postalCode` alone still
+  included `nik`'s ~30 KB province/regency dataset. Planned fix:
+  per-validator subpath exports (e.g. `idvalidator-id/nik`). Until then,
+  expect the full `idvalidator-id` bundle size (~62 KB minified) regardless
+  of which validators you actually use.
 - Only Indonesia (`idvalidator-id`) is implemented so far.
+
+---
+
+## Compatibility
+
+| Environment | Status |
+| --- | --- |
+| Node.js 18 / 20 / 22 | Tested — CI runs the full test suite on all three every push ([`ci.yml`](.github/workflows/ci.yml)) |
+| TypeScript | Tested — `tsc --noEmit` per package in CI; full `.d.ts`/`.d.cts` shipped |
+| ESM | Tested — package `type: module`, ESM build exercised by the test suite and manual smoke tests |
+| CommonJS | Tested — dual `.cjs` build, manually verified with `require()` |
+| Browser | Tested via [jsdom](https://github.com/jsdom/jsdom) (a simulated DOM environment, not a full browser engine) — all validators load and run correctly with no Node-only APIs used (confirmed by both static analysis and the jsdom run). **Not tested in a real browser** (Chrome/Firefox/Safari) — if you hit an issue there, please open an issue. |
+| Bun | **Untested.** No network access to install Bun in this project's CI/dev sandbox at time of writing. Code uses no Bun-specific or Node-only APIs, so it's likely to work, but this is not verified. |
+| Deno | **Untested**, same reason as Bun. |
 
 ---
 
@@ -174,8 +199,9 @@ id-validator/
 
 See [`CHANGELOG.md`](CHANGELOG.md) for full version history. Not yet
 started, per the original PRD: additional country packages
-(`id-validator-us`, `-my`, `-sg`, ...), and further global modules (IBAN,
-SWIFT/BIC, currency).
+(`id-validator-us`, `-my`, `-sg`, ...), further global modules (IBAN,
+SWIFT/BIC, currency), and per-validator subpath exports for real
+tree-shaking (see Known Limitations above).
 
 ---
 

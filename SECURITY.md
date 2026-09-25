@@ -2,7 +2,7 @@
 
 ## Regular Expression Denial of Service (ReDoS) Audit
 
-**Last Audit Date:** December 2024  
+**Last Audit Date:** 2026-09-21
 **Status:** No ReDoS vulnerabilities identified
 
 ### Summary
@@ -29,7 +29,10 @@ All regular expressions used in the id-validator library have been audited for p
 ```typescript
 /[-./]/g
 ```
-**Analysis:** SAFE - Simple character class, no quantifiers.
+**Analysis:** SAFE - Simple character class, no quantifiers. This is the
+*default* pattern only — `stripSeparators()` accepts an optional custom
+`RegExp` parameter, which is outside the scope of this audit. No current
+validator in this repository passes a custom pattern.
 
 ---
 
@@ -47,7 +50,11 @@ All regular expressions used in the id-validator library have been audited for p
 ```typescript
 /^[\d\s.\-/]+$/
 ```
-**Analysis:** SAFE - Anchored pattern with single character class and simple quantifier. No backtracking risk.
+**Analysis:** SAFE - Anchored pattern with single character class and simple quantifier. No backtracking risk. This is the *default* pattern only —
+`hasOnlyExpectedCharacters()` accepts an optional custom `allowedPattern`
+parameter, which is outside the scope of this audit. This function is
+currently unused by any validator in this repository (exported for
+consumer use).
 
 ---
 
@@ -83,7 +90,7 @@ All regular expressions used in the id-validator library have been audited for p
 
 ---
 
-### NIK Validator (`@idvalidator/id`)
+### NIK Validator (`idvalidator-id`)
 
 #### 7. Digit Validation
 **Location:** `packages/id/src/nik/index.ts`
@@ -97,7 +104,7 @@ All regular expressions used in the id-validator library have been audited for p
 
 ---
 
-### Passport Validator (`@idvalidator/id`)
+### Passport Validator (`idvalidator-id`)
 
 #### 8. Passport Pattern
 **Location:** `packages/id/src/passport/index.ts`
@@ -112,7 +119,7 @@ All regular expressions used in the id-validator library have been audited for p
 
 ---
 
-### License Plate Validator (`@idvalidator/id`)
+### License Plate Validator (`idvalidator-id`)
 
 #### 9. License Plate Pattern
 **Location:** `packages/id/src/licensePlate/index.ts`
@@ -129,7 +136,7 @@ All regular expressions used in the id-validator library have been audited for p
 
 ---
 
-### Postal Code Validator (`@idvalidator/id`)
+### Postal Code Validator (`idvalidator-id`)
 
 #### 10. Postal Code Pattern
 **Location:** `packages/id/src/postalCode/index.ts`
@@ -187,7 +194,8 @@ ReDoS protection is validated through:
 1. **Input Safety Tests** - All validators test against excessively long inputs (1001+ chars)
 2. **Maximum Length Guard** - `ensureValidInput()` rejects inputs > 1000 chars before regex evaluation
 3. **Pattern Analysis** - All regex patterns reviewed for linear time complexity
-4. **Fuzz Testing Recommendation** - Consider adding automated fuzzing in future releases
+4. **Adversarial malformed-input testing** - every `validate()`/`isValid()` across all validators has been exercised against `null`, `undefined`, wrong types (number/boolean/object/array), emoji, fullwidth Unicode digits, and 5000-character strings, confirming no crashes or hangs
+5. **Fuzz Testing Recommendation** - Consider adding automated fuzzing in future releases
 
 ---
 
@@ -195,25 +203,32 @@ ReDoS protection is validated through:
 
 If you discover a security vulnerability in this library:
 
-1. **DO NOT** open a public GitHub issue
-2. Email the maintainers directly at: [security contact from package.json]
+1. **DO NOT** open a public GitHub issue.
+2. Open a private security advisory on GitHub (repository -> Security tab
+   -> Report a vulnerability), or contact the maintainer directly via the
+   contact info on their GitHub profile (github.com/BaimPriyatna).
 3. Include:
    - Description of the vulnerability
    - Steps to reproduce
    - Affected versions
    - Suggested fix (if any)
 
-We will acknowledge receipt within 48 hours and provide a timeline for a fix.
+As a solo-maintained project, response time is best-effort rather than a
+guaranteed SLA — the acknowledgment/fix timelines below are targets, not
+contractual commitments.
 
 ---
 
 ## Security Update Policy
 
-- **Critical vulnerabilities** (RCE, ReDoS, data leakage): Patch release within 48 hours
-- **High severity** (DoS, input validation bypass): Patch release within 7 days
-- **Medium/Low severity**: Fixed in next minor release
+Target response times (best-effort, not a contractual SLA — see above):
 
-Security patches will be backported to the previous major version if still in active support.
+- **Critical vulnerabilities** (RCE, ReDoS, data leakage): patch as soon as possible, aimed at within a few days
+- **High severity** (DoS, input validation bypass): patch release within 1-2 weeks
+- **Medium/Low severity**: fixed in the next regular release
+
+There is currently only one major version (1.x), so there is no backport
+policy to speak of yet. If that changes, this section will be updated.
 
 ---
 

@@ -12,14 +12,28 @@ export default defineConfig({
         "packages/**/src/**/*.config.ts",
         "**/node_modules/**",
         "**/dist/**",
+        // Pure re-export barrels: there is no branch/logic to cover here,
+        // only `export { x } from "./y.js"` lines. The re-exported code is
+        // tested directly at its own source file.
+        "packages/id/src/index.ts",
+        "packages/id/src/email/index.ts",
+        // Type-only file: interfaces/types have no runtime code to execute.
+        "packages/core/src/types.ts",
+        // Intentionally unimplemented placeholders (PRD future scope, not
+        // v1) - see their README.md files. Nothing to test until they
+        // have real logic.
+        "packages/global/country-code/**",
+        "packages/global/currency/**",
+        "packages/global/iban/**",
       ],
-      // Coverage thresholds are informational only - NOT blocking
-      // This allows tracking progress without making coverage a merge gate yet
+      // Enforced (not just informational) as of the P1 coverage pass -
+      // actual coverage is ~98% after excluding the files above; 90% is
+      // set as a real floor with headroom, not a target to hug exactly.
       thresholds: {
-        lines: 0,
-        functions: 0,
-        branches: 0,
-        statements: 0,
+        lines: 90,
+        functions: 90,
+        branches: 85,
+        statements: 90,
       },
     },
   },
@@ -29,3 +43,4 @@ export default defineConfig({
     },
   },
 });
+

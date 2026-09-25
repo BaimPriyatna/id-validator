@@ -5,12 +5,21 @@ import { npwp } from "./index.js";
 // weighted mod-11 algorithm; KPP "000", branch "000" (pusat).
 const VALID_LEGACY = "012345674000000";
 const INVALID_LEGACY_CHECKSUM = "012345670000000";
+// Checksum remainder is exactly 0 for this unique number (the "remainder < 2"
+// branch of the check-digit formula, as opposed to the "11 - remainder" branch
+// the other fixtures above exercise).
+const VALID_LEGACY_REMAINDER_ZERO = "123456780000000";
 // Structurally valid NIK (see nik/index.test.ts), used as a NIK-based NPWP.
 const VALID_NIK_BASED = "3171051708900001";
 
 describe("npwp.validate", () => {
   it("accepts a legacy NPWP with a correct checksum", () => {
     expect(npwp.validate(VALID_LEGACY).valid).toBe(true);
+  });
+
+  it("accepts a legacy NPWP whose checksum remainder is 0 or 1", () => {
+    // Exercises the "remainder < 2" branch of the check-digit formula.
+    expect(npwp.validate(VALID_LEGACY_REMAINDER_ZERO).valid).toBe(true);
   });
 
   it("rejects a legacy NPWP with a wrong checksum", () => {
@@ -46,11 +55,19 @@ describe("npwp.parse", () => {
   it("reports NIK-based format without legacy fields", () => {
     expect(npwp.parse(VALID_NIK_BASED)).toEqual({ format: "nik-16" });
   });
+
+  it("throws for an invalid NPWP", () => {
+    expect(() => npwp.parse("123")).toThrow();
+  });
 });
 
 describe("npwp.format", () => {
   it("renders legacy NPWP as XX.XXX.XXX.X-XXX.XXX", () => {
     expect(npwp.format(VALID_LEGACY)).toBe("01.234.567.4-000.000");
+  });
+
+  it("renders a NIK-based NPWP as the plain 16-digit string", () => {
+    expect(npwp.format(VALID_NIK_BASED)).toBe(VALID_NIK_BASED);
   });
 });
 

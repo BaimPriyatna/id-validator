@@ -35,6 +35,12 @@ describe("nik.validate", () => {
     expect(nik.validate("3171051708900000").valid).toBe(false);
   });
 
+  it("rejects district code 00 even with a recognized province/regency", () => {
+    const result = nik.validate("3171001708900001");
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.code === "INVALID_REGION_CODE")).toBe(true);
+  });
+
   it("rejects an unrecognized province code", () => {
     const result = nik.validate("9971051708900001");
     expect(result.valid).toBe(false);
@@ -70,6 +76,12 @@ describe("nik.parse", () => {
     expect(nik.parse(VALID_FEMALE).birthDate).toBe("1990-08-17");
   });
 
+  it("resolves a two-digit year in the 2000s range (not just 1900s)", () => {
+    // Same fixture shape as VALID_MALE but year "05" instead of "90" -
+    // exercises the other branch of the century heuristic.
+    expect(nik.parse("3171051708050001").birthDate).toBe("2005-08-17");
+  });
+
   it("throws for an invalid NIK", () => {
     expect(() => nik.parse("123")).toThrow();
   });
@@ -78,6 +90,20 @@ describe("nik.parse", () => {
 describe("nik.format", () => {
   it("returns the normalized 16-digit string", () => {
     expect(nik.format("3171 0517 0890 0001")).toBe(VALID_MALE);
+  });
+
+  it("throws for an invalid NIK", () => {
+    expect(() => nik.format("123")).toThrow();
+  });
+});
+
+describe("nik.normalize", () => {
+  it("strips whitespace and separators", () => {
+    expect(nik.normalize("3171 0517 0890 0001")).toBe(VALID_MALE);
+  });
+
+  it("returns an empty string for empty input", () => {
+    expect(nik.normalize("")).toBe("");
   });
 });
 

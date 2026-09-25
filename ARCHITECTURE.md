@@ -300,8 +300,9 @@ The library is designed to be:
 - TypeScript-first
 - usable in Node.js and browser environments where supported
 - free from unnecessary network requirements
-- suitable for tree-shaking
 - explicit about validation limitations
+
+Tree-shaking works at the **package** level (installing only `id-validator-id` doesn't pull in an unrelated country's package) but not yet at the **per-validator** level within a country package: because each country package's build currently bundles all of its validators into a single `dist/index.js`, importing just one validator (e.g. `postalCode`) does not let a consumer's bundler exclude another validator's code or reference data (e.g. `nik`'s ~30 KB province/regency dataset) from the final bundle. This has been verified empirically with esbuild, not just assumed. See `README.md`'s "Known Limitations" for details and the planned fix (per-validator subpath exports).
 
 Validation does not require sending user input to a remote service by default. This is particularly important because identifiers and personal data may be sensitive.
 

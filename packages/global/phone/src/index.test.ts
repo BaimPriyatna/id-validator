@@ -26,9 +26,19 @@ describe("phone.validate", () => {
     expect(phone.validate("").errors[0].code).toBe("REQUIRED");
   });
 
-  it("rejects a number with an unrecognized calling code", () => {
+  it("rejects an E.164-shaped number with a leading digit that's not +1-9", () => {
     // "0" is not a valid E.164 leading digit for any calling code.
-    expect(phone.validate("+0123456789").valid).toBe(false);
+    const result = phone.validate("+0123456789");
+    expect(result.valid).toBe(false);
+    expect(result.errors[0].code).toBe("INVALID_FORMAT");
+  });
+
+  it("rejects an E.164-shaped number whose prefix matches no known calling code", () => {
+    // Passes the E.164 shape check (starts with +9, 9 total digits) but "999"
+    // is not in the calling-code table.
+    const result = phone.validate("+999123456");
+    expect(result.valid).toBe(false);
+    expect(result.errors[0].code).toBe("UNKNOWN_CALLING_CODE");
   });
 });
 
