@@ -24,6 +24,10 @@ npm test
 npm run typecheck
 ```
 
+For performance-sensitive changes, also run `npm run bench:throughput` (and
+optionally `npm run bench -- --compare benchmarks/baseline.json`). See
+[BENCHMARKS.md](./BENCHMARKS.md).
+
 ## Adding a validator
 
 Every validator must:

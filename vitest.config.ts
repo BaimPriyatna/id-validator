@@ -3,12 +3,17 @@ import { defineConfig } from "vitest/config";
 export default defineConfig({
   test: {
     include: ["packages/**/src/**/*.test.ts"],
+    // Benchmarks run only via `vitest bench` / `npm run bench` (not on every test).
+    benchmark: {
+      include: ["packages/**/src/**/*.bench.ts"],
+    },
     coverage: {
       provider: "v8",
       reporter: ["text", "json", "html", "lcov"],
       include: ["packages/**/src/**/*.ts"],
       exclude: [
         "packages/**/src/**/*.test.ts",
+        "packages/**/src/**/*.bench.ts",
         "packages/**/src/**/*.config.ts",
         "**/node_modules/**",
         "**/dist/**",
@@ -39,7 +44,11 @@ export default defineConfig({
   },
   resolve: {
     alias: {
+      // Point at source so benches/tests don't depend on a prior tsup build.
       "@idvalidator/core": new URL("./packages/core/src/index.ts", import.meta.url).pathname,
+      "@idvalidator/global-phone": new URL("./packages/global/phone/src/index.ts", import.meta.url).pathname,
+      "@idvalidator/global-email": new URL("./packages/global/email/src/index.ts", import.meta.url).pathname,
+      "@idvalidator/data-id-address": new URL("./packages/data-id-address/src/index.ts", import.meta.url).pathname,
     },
   },
 });

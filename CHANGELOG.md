@@ -11,6 +11,9 @@ All notable changes to this project will be documented in this file.
 - GitHub issue templates (bug report, feature request) and PR template
 - `CODE_OF_CONDUCT.md` (Contributor Covenant 2.1); CONTRIBUTING expanded with
   issue/PR workflow
+- Benchmarks: `packages/id/src/id.bench.ts`, `scripts/throughput.mjs`,
+  `BENCHMARKS.md`, and `benchmarks/baseline.json` (`npm run bench` /
+  `npm run bench:throughput`)
 
 ## [1.0.2] - 2026-09-21
 

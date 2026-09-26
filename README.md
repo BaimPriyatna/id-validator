@@ -31,6 +31,7 @@ if (result.valid) {
 - [Packages](#packages)
 - [Status (v1)](#status-v1)
 - [Framework examples](#framework-examples)
+- [Performance](#performance)
 - [Requirements](#requirements)
 - [Development](#development)
 - [Project Structure](#project-structure)
@@ -121,6 +122,21 @@ Copy-paste integrations for Express (middleware), Zod (`.refine()` /
 
 ---
 
+## Performance
+
+On a typical developer laptop (Node 22, Windows x64), validating **100,000**
+structurally valid NIKs takes on the order of **~100 ms** (~1M ops/sec).
+Full table, methodology, and how to re-run / compare baselines:
+
+→ **[BENCHMARKS.md](./BENCHMARKS.md)**
+
+```bash
+npm run build && npm run bench:throughput   # 100k wall-clock table
+npm run bench                               # Vitest + Tinybench
+```
+
+---
+
 ## Requirements
 
 - Node.js 18 or newer
@@ -135,6 +151,7 @@ npm install
 npm run build      # builds all packages (dual ESM/CJS + .d.ts via tsup)
 npm test           # vitest, all packages
 npm run typecheck  # tsc --noEmit per package
+npm run bench      # performance (see BENCHMARKS.md)
 ```
 
 See [`CONTRIBUTING.md`](CONTRIBUTING.md) for adding a validator, opening
@@ -149,6 +166,7 @@ issues/PRs, and cutting a release. Community norms are in
 id-validator/
 ├── README.md
 ├── EXAMPLES.md           # Express / Zod / React integration snippets
+├── BENCHMARKS.md         # Throughput numbers + how to re-run / compare
 ├── CHANGELOG.md
 ├── CONTRIBUTING.md
 ├── CODE_OF_CONDUCT.md
@@ -157,6 +175,8 @@ id-validator/
 ├── REFERENCE.md
 ├── SECURITY.md
 ├── LICENSE
+├── benchmarks/           # Vitest bench baseline JSON for --compare
+├── scripts/              # e.g. throughput.mjs
 ├── .github/
 │   ├── ISSUE_TEMPLATE/   # bug + feature issue forms
 │   ├── PULL_REQUEST_TEMPLATE.md

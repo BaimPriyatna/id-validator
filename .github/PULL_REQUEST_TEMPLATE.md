@@ -20,6 +20,7 @@ Briefly describe what this PR does and why.
 - [ ] `CHANGELOG.md` `[Unreleased]` (or release section) updated for user-facing changes
 - [ ] Package / API follows the domain-first shape (`validate` / `normalize` / `parse` / `format` as relevant)
 - [ ] Docs state what the change does **not** validate (no implied official verification)
+- [ ] Hot-path / perf-sensitive changes: re-ran `npm run bench:throughput` (or `npm run bench`) and updated `BENCHMARKS.md` / `benchmarks/baseline.json` if needed
 
 ## Related issues
 
