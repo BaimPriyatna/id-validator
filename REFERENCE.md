@@ -40,7 +40,7 @@ validator is implemented, following this template:
 ## postalCode
 - **API:** `.validate()`, `.normalize()`
 - **What it validates:** 5 digits, first digit non-zero
-- **Not implemented directly:** `.parse()`, `.format()` — kept out of the core validator so the default bundle stays lean (PRD §18). For real postal<->region resolution, use the separate, optional **`@idvalidator/data-id-address`** package: `lookupPostalCode(code)` / `resolvePostalCode(code)` go code -> district(s)/names (usually one match; ~7.5% of codes genuinely resolve to more than one district); `searchPostalCodesByName(query)` goes the other way, name -> postal code(s). Source: Kepmendagri No. 300.2.2-3128/2025, via github.com/cahyadsn/wilayah_kodepos (MIT).
+- **Not implemented directly:** `.parse()`, `.format()` — kept out of the core validator so the default bundle stays lean (PRD §18). For real postal<->region resolution, use the separate, optional **`@idvalidator/data-id-address`** package: `lookupPostalCode(code)` / `resolvePostalCode(code)` go code -> district(s)/names (usually one match; ~7.5% of codes genuinely resolve to more than one district); `searchPostalCodesByName(query, { level, output })` goes the other way, name -> postal code(s), scoped to province/regency/district and returning codes-only by default (`output: "all"` for full names). Source: Kepmendagri No. 300.2.2-3128/2025, via github.com/cahyadsn/wilayah_kodepos (MIT).
 
 ## licensePlate
 - **API:** `.validate()`, `.normalize()`, `.parse()`, `.format()`

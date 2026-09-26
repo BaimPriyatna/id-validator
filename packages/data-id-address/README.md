@@ -37,7 +37,9 @@ if (postalCode.validate(code).valid) {
 - `resolveAddress({ provinceCode, regencyCode, districtCode? })` -> composes the three above
 - `lookupPostalCode(code)` -> `{ provinceCode, regencyCode, districtCode }[]` — usually one match; ~7.5% of real postal codes resolve to more than one district, so all matches are returned
 - `resolvePostalCode(code)` -> `ResolvedAddress[]` — `lookupPostalCode` + `resolveAddress` in one call
-- `searchPostalCodesByName(query)` -> `{ postalCode, province, regency, district }[]` — reverse of `resolvePostalCode`: region name -> postal code(s). Case-insensitive substring match, district names first, falling back to regency (city/kabupaten) names
+- `searchPostalCodesByName(query, options?)` -> `string[]` (default) or `PostalCodeNameMatch[]` (`output: "all"`) — reverse of `resolvePostalCode`: region name -> postal code(s)
+  - `options.level`: `"province" | "regency" | "district"` (default `"district"`) — which admin level to match `query` against. Postal codes are assigned at district (kecamatan/kelurahan) level; there's no separate village/desa table in this dataset
+  - `options.output`: `"codes"` (default, just the postal codes, deduplicated + sorted) or `"all"` (full province/regency/district objects per match — one entry per postal code, so a broad `level` repeats names across many entries)
 - `lookupPlateRegion(code)` -> `{ code, areas } | null` — **community-sourced, not official** (see below)
 - `searchPlateCodesByArea(query)` -> `{ code, areas }[]` — reverse of `lookupPlateRegion`: area name -> plate region code(s). Case-insensitive substring match against each code's area list
 
@@ -45,8 +47,10 @@ if (postalCode.validate(code).valid) {
 import { searchPostalCodesByName, searchPlateCodesByArea } from "@idvalidator/data-id-address";
 
 searchPostalCodesByName("Bandung Wetan");
-// [{ postalCode: "40114", province: {...Jawa Barat}, regency: {...Kota Bandung}, district: {...Bandung Wetan} },
-//  { postalCode: "40115", ... }, { postalCode: "40116", ... }]
+// ["40114", "40115", "40116"]
+
+searchPostalCodesByName("Bandung", { level: "regency", output: "all" });
+// [{ postalCode: "40111", province: {...Jawa Barat}, regency: {...Kota Bandung}, district: {...} }, ...]
 
 searchPlateCodesByArea("Bandung");
 // [{ code: "D", areas: ["Bandung", "Cimahi"] }]

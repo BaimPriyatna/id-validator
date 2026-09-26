@@ -92,23 +92,42 @@ describe("resolvePostalCode", () => {
 });
 
 describe("searchPostalCodesByName", () => {
-  it("finds every postal code for a known district name", () => {
+  it("defaults to district-level match, codes only", () => {
     const results = searchPostalCodesByName("Bandung Wetan");
+    expect(results).toEqual(["40114", "40115", "40116"]);
+  });
+
+  it("is case-insensitive and matches substrings", () => {
+    expect(searchPostalCodesByName("bandung wetan")).toEqual(["40114", "40115", "40116"]);
+  });
+
+  it("output: 'all' returns full province/regency/district objects", () => {
+    const results = searchPostalCodesByName("Bandung Wetan", { output: "all" });
     expect(results.map((r) => r.postalCode).sort()).toEqual(["40114", "40115", "40116"]);
     expect(results[0].regency.name).toBe("Kota Bandung");
     expect(results[0].province.name).toBe("Jawa Barat");
   });
 
-  it("is case-insensitive and matches substrings", () => {
-    const results = searchPostalCodesByName("bandung wetan");
-    expect(results.length).toBe(3);
+  it("level: 'district' does not match a regency-only name", () => {
+    // "Kota Bandung" is a regency name, not a district name.
+    expect(searchPostalCodesByName("Kota Bandung")).toEqual([]);
   });
 
-  it("falls back to a regency-level match when no district matches", () => {
-    // "Kota Bandung" is a regency name, not a district name.
-    const results = searchPostalCodesByName("Kota Bandung");
+  it("level: 'regency' matches a city/kabupaten name and aggregates its districts", () => {
+    const results = searchPostalCodesByName("Kota Bandung", { level: "regency" });
     expect(results.length).toBeGreaterThan(3);
+    expect(results).toContain("40115");
+  });
+
+  it("level: 'regency' with output: 'all' includes regency names on every entry", () => {
+    const results = searchPostalCodesByName("Kota Bandung", { level: "regency", output: "all" });
     expect(results.every((r) => r.regency.name === "Kota Bandung")).toBe(true);
+  });
+
+  it("level: 'province' aggregates every district under matching provinces", () => {
+    const results = searchPostalCodesByName("Jawa Barat", { level: "province" });
+    expect(results.length).toBeGreaterThan(100);
+    expect(results).toContain("40115");
   });
 
   it("returns an empty array for an unknown name", () => {

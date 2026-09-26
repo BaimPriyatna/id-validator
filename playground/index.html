@@ -170,6 +170,23 @@
       <input type="text" id="postal-input" placeholder="40115" autocomplete="off" spellcheck="false" />
       <button id="postal-run">Look up</button>
     </div>
+    <div class="row" id="postal-scope" style="margin-top:8px; display:none;">
+      <div>
+        <label for="postal-level">Search level</label><br />
+        <select id="postal-level">
+          <option value="district">district (kecamatan/kelurahan)</option>
+          <option value="regency">regency (kabupaten/kota)</option>
+          <option value="province">province</option>
+        </select>
+      </div>
+      <div>
+        <label for="postal-output-format">Output</label><br />
+        <select id="postal-output-format">
+          <option value="codes">codes only</option>
+          <option value="all">all (with province → district)</option>
+        </select>
+      </div>
+    </div>
     <div class="row" id="postal-examples" style="margin-top:8px;"></div>
     <pre id="postal-output">// e.g. "40115" or "Bandung Wetan"</pre>
 
@@ -400,6 +417,7 @@
       btn.textContent = `${ex.label}: ${ex.value}`;
       btn.onclick = () => {
         modeSelect.value = ex.mode;
+        modeSelect.dispatchEvent(new Event("change"));
         input.value = ex.value;
         execute();
       };
@@ -431,8 +449,14 @@
     outputId: "postal-output",
     examplesId: "postal-examples",
     examples: POSTAL_EXAMPLES,
-    run: (mod, mode, value) =>
-      mode === "toName" ? mod.resolvePostalCode(value) : mod.searchPostalCodesByName(value),
+    run: (mod, mode, value) => {
+      if (mode === "toName") return mod.resolvePostalCode(value);
+      const level = document.getElementById("postal-level").value;
+      const outputFormat = document.getElementById("postal-output-format").value;
+      return outputFormat === "all"
+        ? mod.searchPostalCodesByName(value, { level, output: "all" })
+        : mod.searchPostalCodesByName(value, { level });
+    },
   });
 
   wireLookup({
@@ -445,6 +469,14 @@
     run: (mod, mode, value) =>
       mode === "toArea" ? mod.lookupPlateRegion(value) : mod.searchPlateCodesByArea(value),
   });
+
+  const postalModeEl = document.getElementById("postal-mode");
+  const postalScopeEl = document.getElementById("postal-scope");
+  function syncPostalScopeVisibility() {
+    postalScopeEl.style.display = postalModeEl.value === "toCode" ? "flex" : "none";
+  }
+  postalModeEl.addEventListener("change", syncPostalScopeVisibility);
+  syncPostalScopeVisibility();
 </script>
 
 </body>

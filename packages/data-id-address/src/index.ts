@@ -144,25 +144,71 @@ export interface PostalCodeNameMatch {
   district: District;
 }
 
+export type PostalSearchLevel = "province" | "regency" | "district";
+
+export interface SearchPostalCodesOptions {
+  /**
+   * Which admin level to match `query` against. Indonesian postal codes are
+   * assigned at district (kecamatan/kelurahan) level — this dataset has no
+   * separate village/desa table, so "district" is the finest level
+   * available and the default. Matching at "regency" (kabupaten/kota) or
+   * "province" can span many districts, hence `output` below.
+   * @default "district"
+   */
+  level?: PostalSearchLevel;
+  /**
+   * "codes" (default): just the matching postal codes, deduplicated and
+   * sorted — cheap regardless of how broad `level` is, a safe default for
+   * a province-level search that could otherwise span thousands of rows.
+   * "all": every match's full province/regency/district objects (one
+   * entry per postal code, so a broad match repeats the same province/
+   * regency across many entries) — opt in when you actually need names.
+   * @default "codes"
+   */
+  output?: "codes" | "all";
+}
+
+function districtsMatchingLevel(level: PostalSearchLevel, q: string): typeof adminData.districts {
+  if (level === "district") {
+    return adminData.districts.filter((d) => d.name.toLowerCase().includes(q));
+  }
+  if (level === "regency") {
+    const keys = new Set(
+      adminData.regencies
+        .filter((r) => r.name.toLowerCase().includes(q))
+        .map((r) => `${r.provinceCode}:${r.code}`),
+    );
+    return adminData.districts.filter((d) => keys.has(`${d.provinceCode}:${d.regencyCode}`));
+  }
+  const keys = new Set(
+    adminData.provinces.filter((p) => p.name.toLowerCase().includes(q)).map((p) => p.code),
+  );
+  return adminData.districts.filter((d) => keys.has(d.provinceCode));
+}
+
 /**
  * Region name -> postal code(s) — the reverse of resolvePostalCode().
- * Matches district names first (case-insensitive substring; district is
- * the level Indonesian postal codes are actually assigned at), since
- * that's the most common real-world lookup ("Bandung Wetan" -> 40114,
- * 40115, 40116). Falls back to a regency (city/kabupaten) name match,
- * aggregating every district's codes under it, only when nothing matches
- * at district level — a regency name is rarely also a district name, so
- * this rarely returns both. Returns [] for no match anywhere.
- *
- * Built from the same admin-hierarchy.json + postal-index.json data as
- * the rest of this package, not a separate name index — no extra dataset,
- * so it carries the same version/source/coverage caveats.
+ * Scope the search with `level` (province / regency / district — see
+ * PostalSearchLevel) and choose how much detail comes back with `output`.
+ * Returns [] for no match. Built from the same admin-hierarchy.json +
+ * postal-index.json data as the rest of this package, not a separate name
+ * index — no extra dataset, so it carries the same version/source/coverage
+ * caveats.
  */
-export function searchPostalCodesByName(query: string): PostalCodeNameMatch[] {
+export function searchPostalCodesByName(
+  query: string,
+  options: SearchPostalCodesOptions & { output: "all" },
+): PostalCodeNameMatch[];
+export function searchPostalCodesByName(query: string, options?: SearchPostalCodesOptions): string[];
+export function searchPostalCodesByName(
+  query: string,
+  options: SearchPostalCodesOptions = {},
+): PostalCodeNameMatch[] | string[] {
   const q = query.trim().toLowerCase();
   if (!q) return [];
+  const districts = districtsMatchingLevel(options.level ?? "district", q);
 
-  const collect = (districts: typeof adminData.districts): PostalCodeNameMatch[] => {
+  if (options.output === "all") {
     const matches: PostalCodeNameMatch[] = [];
     for (const d of districts) {
       const codes = DISTRICT_POSTAL_CODES.get(`${d.provinceCode}:${d.regencyCode}:${d.code}`);
@@ -170,25 +216,17 @@ export function searchPostalCodesByName(query: string): PostalCodeNameMatch[] {
       const province = lookupProvince(d.provinceCode);
       const regency = lookupRegency(d.provinceCode, d.regencyCode);
       if (!province || !regency) continue;
-      for (const postalCode of codes) {
-        matches.push({ postalCode, province, regency, district: d });
-      }
+      for (const postalCode of codes) matches.push({ postalCode, province, regency, district: d });
     }
     return matches;
-  };
+  }
 
-  const districtMatches = collect(
-    adminData.districts.filter((d) => d.name.toLowerCase().includes(q)),
-  );
-  if (districtMatches.length > 0) return districtMatches;
-
-  const matchingRegencies = new Set(
-    adminData.regencies.filter((r) => r.name.toLowerCase().includes(q)).map((r) => `${r.provinceCode}:${r.code}`),
-  );
-  if (matchingRegencies.size === 0) return [];
-  return collect(
-    adminData.districts.filter((d) => matchingRegencies.has(`${d.provinceCode}:${d.regencyCode}`)),
-  );
+  const codeSet = new Set<string>();
+  for (const d of districts) {
+    const codes = DISTRICT_POSTAL_CODES.get(`${d.provinceCode}:${d.regencyCode}:${d.code}`);
+    if (codes) for (const c of codes) codeSet.add(c);
+  }
+  return [...codeSet].sort();
 }
 
 /**

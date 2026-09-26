@@ -17,7 +17,7 @@ All notable changes to this project will be documented in this file.
 - Browser playground (`playground/`, `npm run build:playground`), deployed to
   GitHub Pages on push to `main` via `.github/workflows/playground.yml`
 - `@idvalidator/data-id-address`: `resolvePostalCode(code)` (postal code
-  straight to region names), `searchPostalCodesByName(query)` (region name
+  straight to region names), `searchPostalCodesByName(query, { level, output })` (region name
   -> postal code(s), the reverse), and `searchPlateCodesByArea(query)`
   (area name -> plate region code(s), the reverse of `lookupPlateRegion`)
 
