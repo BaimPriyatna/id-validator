@@ -30,6 +30,7 @@ if (result.valid) {
 - [Architecture](#architecture)
 - [Packages](#packages)
 - [Status (v1)](#status-v1)
+- [Framework examples](#framework-examples)
 - [Requirements](#requirements)
 - [Development](#development)
 - [Project Structure](#project-structure)
@@ -111,6 +112,15 @@ what each one does and does **not** check, is in
 
 ---
 
+## Framework examples
+
+Copy-paste integrations for Express (middleware), Zod (`.refine()` /
+`.superRefine()`), and React (form validation):
+
+→ **[EXAMPLES.md](./EXAMPLES.md)**
+
+---
+
 ## Requirements
 
 - Node.js 18 or newer
@@ -127,8 +137,9 @@ npm test           # vitest, all packages
 npm run typecheck  # tsc --noEmit per package
 ```
 
-See [`CONTRIBUTING.md`](CONTRIBUTING.md) for adding a validator, adding a
-country package, and cutting a release.
+See [`CONTRIBUTING.md`](CONTRIBUTING.md) for adding a validator, opening
+issues/PRs, and cutting a release. Community norms are in
+[`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md).
 
 ---
 
@@ -137,14 +148,19 @@ country package, and cutting a release.
 ```
 id-validator/
 ├── README.md
+├── EXAMPLES.md           # Express / Zod / React integration snippets
 ├── CHANGELOG.md
 ├── CONTRIBUTING.md
+├── CODE_OF_CONDUCT.md
 ├── ARCHITECTURE.md
 ├── ERROR-CODES.md
 ├── REFERENCE.md
 ├── SECURITY.md
 ├── LICENSE
-├── .github/workflows/    # CI (test) and release (publish) pipelines
+├── .github/
+│   ├── ISSUE_TEMPLATE/   # bug + feature issue forms
+│   ├── PULL_REQUEST_TEMPLATE.md
+│   └── workflows/        # CI (test) and release (publish) pipelines
 └── packages/
     ├── core/                     # @idvalidator/core
     ├── global/

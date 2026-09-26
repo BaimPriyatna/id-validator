@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/BaimPriyatna/id-validator/security/advisories/new
+    about: Please report security issues privately — see SECURITY.md
+  - name: Documentation & API reference
+    url: https://github.com/BaimPriyatna/id-validator/blob/main/REFERENCE.md
+    about: Check REFERENCE.md and EXAMPLES.md before opening a usage question

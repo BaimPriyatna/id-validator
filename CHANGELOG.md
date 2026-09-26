@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Added
+
+- `EXAMPLES.md` — Express middleware, Zod `.refine()` / `.superRefine()`, and
+  React form integration snippets
+- GitHub issue templates (bug report, feature request) and PR template
+- `CODE_OF_CONDUCT.md` (Contributor Covenant 2.1); CONTRIBUTING expanded with
+  issue/PR workflow
+
 ## [1.0.2] - 2026-09-21
 
 ### Changed

@@ -20,6 +20,9 @@ per-validator limitations.
 
 ## Usage
 
+Framework integrations (Express, Zod, React): see the repo
+[EXAMPLES.md](https://github.com/BaimPriyatna/id-validator/blob/main/EXAMPLES.md).
+
 ```ts
 import { nik, npwp, phone, postalCode, licensePlate, sim, passport } from "idvalidator-id";
 

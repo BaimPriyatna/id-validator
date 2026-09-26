@@ -1,5 +1,29 @@
 # Contributing
 
+By participating, you agree to uphold our [Code of Conduct](./CODE_OF_CONDUCT.md).
+
+## Reporting issues
+
+Use the GitHub issue templates:
+
+- **Bug report** — package + version, Node/runtime, minimal reproduction, expected vs actual
+- **Feature request** — problem, proposed API, and any official specs/datasets
+
+Security issues: follow [SECURITY.md](./SECURITY.md) (private advisory), not a public bug report.
+
+## Pull requests
+
+PRs use [`.github/PULL_REQUEST_TEMPLATE.md`](./.github/PULL_REQUEST_TEMPLATE.md).
+Before requesting review, make sure the checklist items that apply to your change
+are checked — especially tests, `REFERENCE.md`, and stating what you do **not** validate.
+
+```bash
+npm install
+npm run build
+npm test
+npm run typecheck
+```
+
 ## Adding a validator
 
 Every validator must:
@@ -8,6 +32,7 @@ Every validator must:
 - Use machine-readable error `code`s, not just messages.
 - Ship valid-case, invalid-case, normalization, and regression tests.
 - Document what it validates and, explicitly, what it does NOT validate.
+- Update [REFERENCE.md](./REFERENCE.md) (and [ERROR-CODES.md](./ERROR-CODES.md) if you add codes).
 
 ## Adding a country package
 
