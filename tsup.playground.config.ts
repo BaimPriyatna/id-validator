@@ -1,7 +1,10 @@
 import { defineConfig } from "tsup";
 
 export default defineConfig({
-  entry: { idvalidator: "packages/id/src/index.ts" },
+  entry: {
+    idvalidator: "packages/id/src/index.ts",
+    "idvalidator-data": "packages/data-id-address/src/index.ts",
+  },
   format: ["esm"],
   platform: "browser",
   target: "es2020",

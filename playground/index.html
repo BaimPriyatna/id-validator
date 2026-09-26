@@ -102,6 +102,16 @@
   }
   .badge.valid { background: rgba(61,220,151,0.15); color: var(--ok); }
   .badge.invalid { background: rgba(255,107,107,0.15); color: var(--err); }
+  .badge.optional { background: rgba(95,179,255,0.15); color: var(--accent); margin-left: 8px; }
+  h2 { font-size: 1rem; margin: 0 0 6px; }
+  h3 { font-size: 0.88rem; margin: 18px 0 8px; color: var(--muted); font-weight: 600; }
+  code {
+    font-family: var(--mono);
+    background: rgba(127,127,127,0.15);
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-size: 0.85em;
+  }
   .note {
     color: var(--muted);
     font-size: 0.8rem;
@@ -142,6 +152,39 @@
 
     <pre id="output">// pick a validator, type an input, and run a method</pre>
     <p class="note" id="scope-note"></p>
+  </div>
+
+  <div class="card">
+    <h2>Region lookup <span class="badge optional">optional package</span></h2>
+    <p class="note">
+      From <code>@idvalidator/data-id-address</code> — reference data, not structural validation.
+      Loads on first use (~250 KB gzipped: province/regency/district names + postal index).
+    </p>
+
+    <h3>Postal code ⇄ region name</h3>
+    <div class="row">
+      <select id="postal-mode">
+        <option value="toName">postal code → region name</option>
+        <option value="toCode">region name → postal code(s)</option>
+      </select>
+      <input type="text" id="postal-input" placeholder="40115" autocomplete="off" spellcheck="false" />
+      <button id="postal-run">Look up</button>
+    </div>
+    <div class="row" id="postal-examples" style="margin-top:8px;"></div>
+    <pre id="postal-output">// e.g. "40115" or "Bandung Wetan"</pre>
+
+    <h3>License plate region ⇄ area name</h3>
+    <div class="row">
+      <select id="plate-mode">
+        <option value="toArea">region code → area name(s)</option>
+        <option value="toCode">area name → region code(s)</option>
+      </select>
+      <input type="text" id="plate-input" placeholder="B" autocomplete="off" spellcheck="false" />
+      <button id="plate-run">Look up</button>
+    </div>
+    <div class="row" id="plate-examples" style="margin-top:8px;"></div>
+    <pre id="plate-output">// e.g. "B" or "Bandung"</pre>
+    <p class="note">Plate region codes are community-sourced, not an official Korlantas dataset — treat matches as a hint.</p>
   </div>
 </main>
 
@@ -325,6 +368,83 @@
   });
 
   renderControls();
+
+  // --- Region lookup (separate, larger bundle — loaded only when needed) ---
+
+  let dataModulePromise = null;
+  function loadDataModule() {
+    if (!dataModulePromise) {
+      dataModulePromise = import("./dist/idvalidator-data.js");
+    }
+    return dataModulePromise;
+  }
+
+  const POSTAL_EXAMPLES = [
+    { label: "postal code", mode: "toName", value: "40115" },
+    { label: "region name", mode: "toCode", value: "Bandung Wetan" },
+  ];
+  const PLATE_EXAMPLES = [
+    { label: "region code", mode: "toArea", value: "B" },
+    { label: "area name", mode: "toCode", value: "Bandung" },
+  ];
+
+  function wireLookup({ modeSelectId, inputId, runButtonId, outputId, examplesId, examples, run }) {
+    const modeSelect = document.getElementById(modeSelectId);
+    const input = document.getElementById(inputId);
+    const output = document.getElementById(outputId);
+    const examplesEl = document.getElementById(examplesId);
+
+    for (const ex of examples) {
+      const btn = document.createElement("button");
+      btn.className = "example";
+      btn.textContent = `${ex.label}: ${ex.value}`;
+      btn.onclick = () => {
+        modeSelect.value = ex.mode;
+        input.value = ex.value;
+        execute();
+      };
+      examplesEl.appendChild(btn);
+    }
+
+    function execute() {
+      output.textContent = "Loading reference data…";
+      loadDataModule()
+        .then((mod) => {
+          const result = run(mod, modeSelect.value, input.value);
+          output.textContent = JSON.stringify(result, null, 2);
+        })
+        .catch((err) => {
+          output.textContent = `// failed to load reference data: ${err instanceof Error ? err.message : String(err)}`;
+        });
+    }
+
+    document.getElementById(runButtonId).addEventListener("click", execute);
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") execute();
+    });
+  }
+
+  wireLookup({
+    modeSelectId: "postal-mode",
+    inputId: "postal-input",
+    runButtonId: "postal-run",
+    outputId: "postal-output",
+    examplesId: "postal-examples",
+    examples: POSTAL_EXAMPLES,
+    run: (mod, mode, value) =>
+      mode === "toName" ? mod.resolvePostalCode(value) : mod.searchPostalCodesByName(value),
+  });
+
+  wireLookup({
+    modeSelectId: "plate-mode",
+    inputId: "plate-input",
+    runButtonId: "plate-run",
+    outputId: "plate-output",
+    examplesId: "plate-examples",
+    examples: PLATE_EXAMPLES,
+    run: (mod, mode, value) =>
+      mode === "toArea" ? mod.lookupPlateRegion(value) : mod.searchPlateCodesByArea(value),
+  });
 </script>
 
 </body>
