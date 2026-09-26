@@ -47,6 +47,19 @@ const DISTRICTS = new Map(
 );
 const PLATE_CODES = new Map(plateData.codes.map((c) => [c.code, c]));
 
+// Reverse of POSTAL_INDEX (district -> postal codes), built once at module
+// load. Derived from the same postal-index.json data as lookupPostalCode(),
+// not a separate dataset, so it carries that data's version/source exactly.
+const DISTRICT_POSTAL_CODES = new Map<string, string[]>();
+for (const [code, matches] of Object.entries(POSTAL_INDEX)) {
+  for (const m of matches) {
+    const key = `${m.provinceCode}:${m.regencyCode}:${m.districtCode}`;
+    const list = DISTRICT_POSTAL_CODES.get(key);
+    if (list) list.push(code);
+    else DISTRICT_POSTAL_CODES.set(key, [code]);
+  }
+}
+
 /**
  * Looks up which district(s) a 5-digit Indonesian postal code is assigned
  * to. Most codes resolve to exactly one district; some (~7.5% of codes in
@@ -112,4 +125,82 @@ export function resolveAddress(codes: {
  */
 export function lookupPlateRegion(code: string): PlateRegionMatch | null {
   return PLATE_CODES.get(code.toUpperCase()) ?? null;
+}
+
+/**
+ * postal code -> resolved region names. Composes lookupPostalCode() +
+ * resolveAddress() so callers who just want names don't have to chain
+ * both calls themselves. Same "usually one match, ~7.5% resolve to more
+ * than one district" behavior as lookupPostalCode().
+ */
+export function resolvePostalCode(code: string): ResolvedAddress[] {
+  return lookupPostalCode(code).map((match) => resolveAddress(match));
+}
+
+export interface PostalCodeNameMatch {
+  postalCode: string;
+  province: Province;
+  regency: Regency;
+  district: District;
+}
+
+/**
+ * Region name -> postal code(s) — the reverse of resolvePostalCode().
+ * Matches district names first (case-insensitive substring; district is
+ * the level Indonesian postal codes are actually assigned at), since
+ * that's the most common real-world lookup ("Bandung Wetan" -> 40114,
+ * 40115, 40116). Falls back to a regency (city/kabupaten) name match,
+ * aggregating every district's codes under it, only when nothing matches
+ * at district level — a regency name is rarely also a district name, so
+ * this rarely returns both. Returns [] for no match anywhere.
+ *
+ * Built from the same admin-hierarchy.json + postal-index.json data as
+ * the rest of this package, not a separate name index — no extra dataset,
+ * so it carries the same version/source/coverage caveats.
+ */
+export function searchPostalCodesByName(query: string): PostalCodeNameMatch[] {
+  const q = query.trim().toLowerCase();
+  if (!q) return [];
+
+  const collect = (districts: typeof adminData.districts): PostalCodeNameMatch[] => {
+    const matches: PostalCodeNameMatch[] = [];
+    for (const d of districts) {
+      const codes = DISTRICT_POSTAL_CODES.get(`${d.provinceCode}:${d.regencyCode}:${d.code}`);
+      if (!codes) continue;
+      const province = lookupProvince(d.provinceCode);
+      const regency = lookupRegency(d.provinceCode, d.regencyCode);
+      if (!province || !regency) continue;
+      for (const postalCode of codes) {
+        matches.push({ postalCode, province, regency, district: d });
+      }
+    }
+    return matches;
+  };
+
+  const districtMatches = collect(
+    adminData.districts.filter((d) => d.name.toLowerCase().includes(q)),
+  );
+  if (districtMatches.length > 0) return districtMatches;
+
+  const matchingRegencies = new Set(
+    adminData.regencies.filter((r) => r.name.toLowerCase().includes(q)).map((r) => `${r.provinceCode}:${r.code}`),
+  );
+  if (matchingRegencies.size === 0) return [];
+  return collect(
+    adminData.districts.filter((d) => matchingRegencies.has(`${d.provinceCode}:${d.regencyCode}`)),
+  );
+}
+
+/**
+ * Area name -> vehicle plate region code(s) — the reverse of
+ * lookupPlateRegion(). Case-insensitive substring match against each
+ * code's areas[] list; returns every code whose area list contains a
+ * match, since a query can plausibly match more than one code's areas.
+ * Same authoritativeness caveat as lookupPlateRegion(): community-sourced
+ * table, not an official Korlantas dataset — treat matches as a hint.
+ */
+export function searchPlateCodesByArea(query: string): PlateRegionMatch[] {
+  const q = query.trim().toLowerCase();
+  if (!q) return [];
+  return plateData.codes.filter((c) => c.areas.some((area) => area.toLowerCase().includes(q)));
 }

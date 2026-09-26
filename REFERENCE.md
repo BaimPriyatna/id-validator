@@ -40,13 +40,13 @@ validator is implemented, following this template:
 ## postalCode
 - **API:** `.validate()`, `.normalize()`
 - **What it validates:** 5 digits, first digit non-zero
-- **Not implemented directly:** `.parse()`, `.format()` — kept out of the core validator so the default bundle stays lean (PRD §18). For real postal->region resolution, use the separate, optional **`@idvalidator/data-id-address`** package: `lookupPostalCode(code)` returns `{ provinceCode, regencyCode, districtCode }[]` (usually one match; ~7.5% of codes genuinely resolve to more than one district). Source: Kepmendagri No. 300.2.2-3128/2025, via github.com/cahyadsn/wilayah_kodepos (MIT).
+- **Not implemented directly:** `.parse()`, `.format()` — kept out of the core validator so the default bundle stays lean (PRD §18). For real postal<->region resolution, use the separate, optional **`@idvalidator/data-id-address`** package: `lookupPostalCode(code)` / `resolvePostalCode(code)` go code -> district(s)/names (usually one match; ~7.5% of codes genuinely resolve to more than one district); `searchPostalCodesByName(query)` goes the other way, name -> postal code(s). Source: Kepmendagri No. 300.2.2-3128/2025, via github.com/cahyadsn/wilayah_kodepos (MIT).
 
 ## licensePlate
 - **API:** `.validate()`, `.normalize()`, `.parse()`, `.format()`
 - **What it validates:** `[A-Z]{1,2} [1-9]\d{0,3} [A-Z]{0,3}` structural pattern (region, number, series)
 - **What it does NOT validate:** that the plate is currently issued/registered
-- **Region-code -> area name lookup:** available via the optional `@idvalidator/data-id-address` package's `lookupPlateRegion(code)` — but flagged there as **community-sourced, not official** (unlike every other lookup in that package). Indonesian plate region codes are a Polri/Korlantas assignment with no known official machine-readable open dataset; this table was compiled from public news/automotive articles, which aren't always consistent with each other. Treat matches as a helpful hint, not a verified fact.
+- **Region-code <-> area name lookup:** available via the optional `@idvalidator/data-id-address` package — `lookupPlateRegion(code)` for code -> area name(s), `searchPlateCodesByArea(query)` for the reverse, area name -> region code(s) — but flagged there as **community-sourced, not official** (unlike every other lookup in that package). Indonesian plate region codes are a Polri/Korlantas assignment with no known official machine-readable open dataset; this table was compiled from public news/automotive articles, which aren't always consistent with each other. Treat matches as a helpful hint, not a verified fact.
 
 ## phone (global)
 - **API:** `.validate()`, `.normalize()`, `.parse()`, `.format()`

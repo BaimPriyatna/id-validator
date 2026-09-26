@@ -36,7 +36,21 @@ if (postalCode.validate(code).valid) {
 - `lookupDistrict(provinceCode, regencyCode, districtCode)` -> `{ provinceCode, regencyCode, code, name } | null`
 - `resolveAddress({ provinceCode, regencyCode, districtCode? })` -> composes the three above
 - `lookupPostalCode(code)` -> `{ provinceCode, regencyCode, districtCode }[]` — usually one match; ~7.5% of real postal codes resolve to more than one district, so all matches are returned
-- `lookupPlateRegion(code)` -> `{ code, areas }[string] | null` — **community-sourced, not official** (see below)
+- `resolvePostalCode(code)` -> `ResolvedAddress[]` — `lookupPostalCode` + `resolveAddress` in one call
+- `searchPostalCodesByName(query)` -> `{ postalCode, province, regency, district }[]` — reverse of `resolvePostalCode`: region name -> postal code(s). Case-insensitive substring match, district names first, falling back to regency (city/kabupaten) names
+- `lookupPlateRegion(code)` -> `{ code, areas } | null` — **community-sourced, not official** (see below)
+- `searchPlateCodesByArea(query)` -> `{ code, areas }[]` — reverse of `lookupPlateRegion`: area name -> plate region code(s). Case-insensitive substring match against each code's area list
+
+```ts
+import { searchPostalCodesByName, searchPlateCodesByArea } from "@idvalidator/data-id-address";
+
+searchPostalCodesByName("Bandung Wetan");
+// [{ postalCode: "40114", province: {...Jawa Barat}, regency: {...Kota Bandung}, district: {...Bandung Wetan} },
+//  { postalCode: "40115", ... }, { postalCode: "40116", ... }]
+
+searchPlateCodesByArea("Bandung");
+// [{ code: "D", areas: ["Bandung", "Cimahi"] }]
+```
 
 ## Why a separate package
 

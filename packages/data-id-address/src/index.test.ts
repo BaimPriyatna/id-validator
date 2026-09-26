@@ -1,5 +1,15 @@
 import { describe, expect, it } from "vitest";
-import { lookupPostalCode, lookupProvince, lookupRegency, lookupDistrict, resolveAddress, lookupPlateRegion } from "./index.js";
+import {
+  lookupPostalCode,
+  lookupProvince,
+  lookupRegency,
+  lookupDistrict,
+  resolveAddress,
+  lookupPlateRegion,
+  resolvePostalCode,
+  searchPostalCodesByName,
+  searchPlateCodesByArea,
+} from "./index.js";
 
 describe("lookupPostalCode", () => {
   it("resolves a known postal code to at least one district", () => {
@@ -65,5 +75,67 @@ describe("lookupPlateRegion", () => {
 
   it("returns null for an unrecognized code", () => {
     expect(lookupPlateRegion("ZZ")).toBeNull();
+  });
+});
+
+describe("resolvePostalCode", () => {
+  it("resolves a postal code straight to names", () => {
+    const [result] = resolvePostalCode("40115");
+    expect(result.province?.name).toBe("Jawa Barat");
+    expect(result.regency?.name).toBe("Kota Bandung");
+    expect(result.district?.name).toBe("Bandung Wetan");
+  });
+
+  it("returns an empty array for an unknown code", () => {
+    expect(resolvePostalCode("00000")).toEqual([]);
+  });
+});
+
+describe("searchPostalCodesByName", () => {
+  it("finds every postal code for a known district name", () => {
+    const results = searchPostalCodesByName("Bandung Wetan");
+    expect(results.map((r) => r.postalCode).sort()).toEqual(["40114", "40115", "40116"]);
+    expect(results[0].regency.name).toBe("Kota Bandung");
+    expect(results[0].province.name).toBe("Jawa Barat");
+  });
+
+  it("is case-insensitive and matches substrings", () => {
+    const results = searchPostalCodesByName("bandung wetan");
+    expect(results.length).toBe(3);
+  });
+
+  it("falls back to a regency-level match when no district matches", () => {
+    // "Kota Bandung" is a regency name, not a district name.
+    const results = searchPostalCodesByName("Kota Bandung");
+    expect(results.length).toBeGreaterThan(3);
+    expect(results.every((r) => r.regency.name === "Kota Bandung")).toBe(true);
+  });
+
+  it("returns an empty array for an unknown name", () => {
+    expect(searchPostalCodesByName("Nonexistent Place Xyz")).toEqual([]);
+  });
+
+  it("returns an empty array for a blank query", () => {
+    expect(searchPostalCodesByName("   ")).toEqual([]);
+  });
+});
+
+describe("searchPlateCodesByArea", () => {
+  it("finds the code for a known area", () => {
+    expect(searchPlateCodesByArea("Jakarta")).toEqual([
+      { code: "B", areas: ["Jakarta", "Bekasi", "Depok", "Tangerang"] },
+    ]);
+  });
+
+  it("is case-insensitive and matches substrings", () => {
+    expect(searchPlateCodesByArea("band")).toEqual([{ code: "D", areas: ["Bandung", "Cimahi"] }]);
+  });
+
+  it("returns an empty array for an unknown area", () => {
+    expect(searchPlateCodesByArea("Nonexistent City")).toEqual([]);
+  });
+
+  it("returns an empty array for a blank query", () => {
+    expect(searchPlateCodesByArea("   ")).toEqual([]);
   });
 });

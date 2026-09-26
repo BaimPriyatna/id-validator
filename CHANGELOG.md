@@ -14,6 +14,18 @@ All notable changes to this project will be documented in this file.
 - Benchmarks: `packages/id/src/id.bench.ts`, `scripts/throughput.mjs`,
   `BENCHMARKS.md`, and `benchmarks/baseline.json` (`npm run bench` /
   `npm run bench:throughput`)
+- Browser playground (`playground/`, `npm run build:playground`), deployed to
+  GitHub Pages on push to `main` via `.github/workflows/playground.yml`
+- `@idvalidator/data-id-address`: `resolvePostalCode(code)` (postal code
+  straight to region names), `searchPostalCodesByName(query)` (region name
+  -> postal code(s), the reverse), and `searchPlateCodesByArea(query)`
+  (area name -> plate region code(s), the reverse of `lookupPlateRegion`)
+
+### Fixed
+
+- `scripts/throughput.mjs` broke `npm run lint` (ESLint typed-linting
+  couldn't find it in any tsconfig project) — excluded `scripts/**` from
+  linting, same as other non-project config files
 
 ## [1.0.2] - 2026-09-21
 
