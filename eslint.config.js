@@ -10,6 +10,7 @@ export default tseslint.config(
       "**/*.config.ts",
       "**/*.config.js",
       "tsup.base.js",
+      "scripts/**",
       "packages/global/country-code/**",
       "packages/global/currency/**",
       "packages/global/iban/**",

@@ -22,6 +22,8 @@ if (result.valid) {
 }
 ```
 
+**[Try it in the browser →](https://baimpriyatna.github.io/id-validator/)** — no install required.
+
 ---
 
 ## Table of Contents

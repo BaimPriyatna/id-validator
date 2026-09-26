@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>id-validator Playground</title>
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #0b0d10;
+    --panel: #14171c;
+    --border: #262b33;
+    --text: #e6e9ef;
+    --muted: #8b93a1;
+    --accent: #5fb3ff;
+    --ok: #3ddc97;
+    --err: #ff6b6b;
+    --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      --bg: #f7f8fa;
+      --panel: #ffffff;
+      --border: #e1e4e9;
+      --text: #14171c;
+      --muted: #5b6270;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    padding: 24px 16px 64px;
+  }
+  header { max-width: 920px; margin: 0 auto 24px; }
+  h1 { font-size: 1.4rem; margin: 0 0 4px; }
+  header p { color: var(--muted); margin: 0; font-size: 0.92rem; }
+  header a { color: var(--accent); }
+  main {
+    max-width: 920px;
+    margin: 0 auto;
+    display: grid;
+    gap: 16px;
+  }
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+  }
+  .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  label { font-size: 0.82rem; color: var(--muted); }
+  select, input[type="text"] {
+    background: var(--bg);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 10px;
+    font-family: var(--mono);
+    font-size: 0.92rem;
+  }
+  select { font-family: var(--sans); }
+  input[type="text"] { flex: 1; min-width: 220px; }
+  .methods { margin-top: 12px; }
+  button {
+    background: var(--bg);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 7px 12px;
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); }
+  button.example {
+    color: var(--muted);
+    font-size: 0.8rem;
+  }
+  pre {
+    margin: 12px 0 0;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px;
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .badge {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-family: var(--mono);
+    padding: 1px 7px;
+    border-radius: 999px;
+    margin-left: 8px;
+  }
+  .badge.valid { background: rgba(61,220,151,0.15); color: var(--ok); }
+  .badge.invalid { background: rgba(255,107,107,0.15); color: var(--err); }
+  .note {
+    color: var(--muted);
+    font-size: 0.8rem;
+    margin-top: 10px;
+  }
+  footer {
+    max-width: 920px;
+    margin: 32px auto 0;
+    color: var(--muted);
+    font-size: 0.8rem;
+  }
+  footer a { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>id-validator Playground</h1>
+  <p>
+    Try the real Indonesia validators in your browser — nothing is installed, nothing leaves this page.
+    Source: <a href="https://github.com/BaimPriyatna/id-validator" target="_blank" rel="noopener">BaimPriyatna/id-validator</a>
+  </p>
+</header>
+
+<main>
+  <div class="card">
+    <div class="row">
+      <div>
+        <label for="validator-select">Validator</label><br />
+        <select id="validator-select"></select>
+      </div>
+      <input type="text" id="input-value" placeholder="Type or pick an example below" autocomplete="off" spellcheck="false" />
+    </div>
+
+    <div class="row" id="example-buttons" style="margin-top:10px;"></div>
+
+    <div class="row methods" id="method-buttons"></div>
+
+    <pre id="output">// pick a validator, type an input, and run a method</pre>
+    <p class="note" id="scope-note"></p>
+  </div>
+</main>
+
+<footer>
+  This page checks structure and format only — it does not confirm a NIK, NPWP, SIM, passport, or plate is
+  actually registered with any government system. See
+  <a href="https://github.com/BaimPriyatna/id-validator#readme" target="_blank" rel="noopener">the README</a>
+  for what each validator does and does not check. All validation runs locally in your browser; no input is sent anywhere.
+</footer>
+
+<script type="module">
+  import * as idvalidator from "./dist/idvalidator.js";
+
+  const VALIDATORS = [
+    {
+      key: "nik",
+      label: "NIK — National ID",
+      methods: ["validate", "normalize", "parse", "format", "isValid"],
+      placeholder: "3171051708900001",
+      examples: [
+        { label: "valid", value: "3171051708900001" },
+        { label: "invalid (too short)", value: "123" },
+      ],
+      note: "16-digit National ID. Checks structure (province/regency/date/sequence), not government registration.",
+    },
+    {
+      key: "npwp",
+      label: "NPWP — Tax ID",
+      methods: ["validate", "normalize", "parse", "format", "isValid"],
+      placeholder: "012345674000000",
+      examples: [
+        { label: "valid (legacy)", value: "012345674000000" },
+        { label: "invalid checksum", value: "012345670000000" },
+      ],
+      note: "Accepts both legacy 15-digit and NIK-based 16-digit formats.",
+    },
+    {
+      key: "phone",
+      label: "Phone (ID-aware)",
+      methods: ["validate", "normalize", "parse", "format", "isValid"],
+      placeholder: "08123456789",
+      examples: [
+        { label: "valid (local)", value: "08123456789" },
+        { label: "valid (E.164)", value: "+628123456789" },
+      ],
+      note: "Does not confirm the number is active, owned by anyone, or registered with a carrier.",
+    },
+    {
+      key: "postalCode",
+      label: "Postal Code",
+      methods: ["validate", "normalize", "isValid"],
+      placeholder: "40115",
+      examples: [
+        { label: "valid", value: "40115" },
+        { label: "invalid (leading 0)", value: "01234" },
+      ],
+      note: "parse()/format() are intentionally not exposed yet — no reliable code-to-region dataset.",
+    },
+    {
+      key: "licensePlate",
+      label: "License Plate",
+      methods: ["validate", "normalize", "parse", "format", "isValid"],
+      placeholder: "B 1234 XYZ",
+      examples: [
+        { label: "valid", value: "B 1234 XYZ" },
+        { label: "invalid (leading 0)", value: "B 0123 XY" },
+      ],
+      note: "Checks plate structure only, not vehicle registration.",
+    },
+    {
+      key: "sim",
+      label: "SIM — Driving License",
+      methods: ["validate", "isValid"],
+      placeholder: "123456789012",
+      examples: [
+        { label: "valid", value: "123456789012" },
+        { label: "invalid (too short)", value: "123" },
+      ],
+      note: "12-digit format check only.",
+    },
+    {
+      key: "passport",
+      label: "Passport",
+      methods: ["validate", "normalize", "isValid"],
+      placeholder: "C1234567",
+      examples: [
+        { label: "valid", value: "C1234567" },
+        { label: "invalid (2 letters)", value: "CC123456" },
+      ],
+      note: "1 letter + 7 digits, case-insensitive.",
+    },
+    {
+      key: "email",
+      label: "Email (global)",
+      methods: ["validate", "normalize", "parse", "isValid"],
+      placeholder: "user@example.com",
+      examples: [
+        { label: "valid", value: "user@example.com" },
+        { label: "invalid", value: "not-an-email" },
+      ],
+      note: "Global validator, exposed by this package like every country package.",
+    },
+  ];
+
+  const selectEl = document.getElementById("validator-select");
+  const inputEl = document.getElementById("input-value");
+  const exampleButtonsEl = document.getElementById("example-buttons");
+  const methodButtonsEl = document.getElementById("method-buttons");
+  const outputEl = document.getElementById("output");
+  const scopeNoteEl = document.getElementById("scope-note");
+
+  for (const v of VALIDATORS) {
+    const opt = document.createElement("option");
+    opt.value = v.key;
+    opt.textContent = v.label;
+    selectEl.appendChild(opt);
+  }
+
+  function currentValidatorMeta() {
+    return VALIDATORS.find((v) => v.key === selectEl.value);
+  }
+
+  function renderControls() {
+    const meta = currentValidatorMeta();
+    inputEl.placeholder = meta.placeholder;
+    scopeNoteEl.textContent = meta.note;
+
+    exampleButtonsEl.innerHTML = "";
+    for (const ex of meta.examples) {
+      const btn = document.createElement("button");
+      btn.className = "example";
+      btn.textContent = `${ex.label}: ${ex.value}`;
+      btn.onclick = () => {
+        inputEl.value = ex.value;
+        runMethod(meta.methods.includes("validate") ? "validate" : meta.methods[0]);
+      };
+      exampleButtonsEl.appendChild(btn);
+    }
+
+    methodButtonsEl.innerHTML = "";
+    for (const m of meta.methods) {
+      const btn = document.createElement("button");
+      btn.textContent = `${meta.key}.${m}()`;
+      btn.onclick = () => runMethod(m);
+      methodButtonsEl.appendChild(btn);
+    }
+  }
+
+  function runMethod(methodName) {
+    const meta = currentValidatorMeta();
+    const validator = idvalidator[meta.key];
+    const input = inputEl.value;
+    let result;
+    let threw = false;
+    try {
+      result = validator[methodName](input);
+    } catch (err) {
+      threw = true;
+      result = { thrown: true, message: err instanceof Error ? err.message : String(err) };
+    }
+
+    let badge = "";
+    if (!threw && methodName === "validate" && typeof result?.valid === "boolean") {
+      badge = `<span class="badge ${result.valid ? "valid" : "invalid"}">${result.valid ? "valid" : "invalid"}</span>`;
+    }
+    if (!threw && methodName === "isValid") {
+      badge = `<span class="badge ${result ? "valid" : "invalid"}">${result}</span>`;
+    }
+
+    outputEl.innerHTML =
+      `<div>&gt; ${meta.key}.${methodName}(${JSON.stringify(input)})${badge}</div>` +
+      `${JSON.stringify(result, null, 2)}`;
+  }
+
+  selectEl.addEventListener("change", renderControls);
+  inputEl.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      const meta = currentValidatorMeta();
+      runMethod(meta.methods.includes("validate") ? "validate" : meta.methods[0]);
+    }
+  });
+
+  renderControls();
+</script>
+
+</body>
+</html>
