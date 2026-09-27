@@ -15,7 +15,11 @@ export default defineConfig({
   noExternal: [/^@idvalidator\//],
   dts: false,
   minify: true,
-  splitting: false,
+  // Splitting lets the village-level dataset (dynamically imported inside
+  // @idvalidator/data-id-address) land in its own chunk instead of being
+  // merged into idvalidator-data.js -- so opening the region-lookup card
+  // doesn't cost ~2.7MB extra unless a village-level lookup is actually run.
+  splitting: true,
   sourcemap: false,
   clean: true,
 });

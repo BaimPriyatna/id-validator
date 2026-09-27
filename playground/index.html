@@ -156,12 +156,14 @@
 
   <div class="card">
     <h2>Region lookup <span class="badge optional">optional package</span></h2>
-    <p class="note">
-      From <code>@idvalidator/data-id-address</code> — reference data, not structural validation.
-      Loads on first use (~250 KB gzipped: province/regency/district names + postal index).
-    </p>
+    <p class="note">From <code>@idvalidator/data-id-address</code> — reference data, not structural validation.</p>
 
     <h3>Postal code ⇄ region name</h3>
+    <p class="note">
+      Loads on first use (~250 KB gzipped: province/regency/district names + postal index).
+      Checking "Village" additionally loads a ~2.5MB desa/kelurahan dataset, in its own chunk —
+      only fetched if you actually check that box.
+    </p>
     <div class="row">
       <select id="postal-mode">
         <option value="toName">postal code → region name</option>
@@ -179,13 +181,13 @@
           <option value="province">province</option>
         </select>
       </div>
-      <div>
-        <label for="postal-output-format">Output</label><br />
-        <select id="postal-output-format">
-          <option value="codes">codes only</option>
-          <option value="all">all (with province → district)</option>
-        </select>
-      </div>
+    </div>
+    <div class="row" style="margin-top:8px; align-items:center;">
+      <label style="color:var(--muted);">Show:</label>
+      <label><input type="checkbox" id="postal-field-province" /> Province</label>
+      <label><input type="checkbox" id="postal-field-regency" /> Regency</label>
+      <label><input type="checkbox" id="postal-field-district" /> District</label>
+      <label><input type="checkbox" id="postal-field-village" /> Village</label>
     </div>
     <div class="row" id="postal-examples" style="margin-top:8px;"></div>
     <pre id="postal-output">// e.g. "40115" or "Bandung Wetan"</pre>
@@ -398,14 +400,15 @@
 
   const POSTAL_EXAMPLES = [
     { label: "postal code", mode: "toName", value: "40115" },
-    { label: "region name", mode: "toCode", value: "Bandung Wetan" },
+    { label: "region name", mode: "toCode", value: "Bandung Wetan", level: "district" },
+    { label: "village-level", mode: "toCode", value: "Batujaya", level: "district", fields: { district: true, village: true } },
   ];
   const PLATE_EXAMPLES = [
     { label: "region code", mode: "toArea", value: "B" },
     { label: "area name", mode: "toCode", value: "Bandung" },
   ];
 
-  function wireLookup({ modeSelectId, inputId, runButtonId, outputId, examplesId, examples, run }) {
+  function wireLookup({ modeSelectId, inputId, runButtonId, outputId, examplesId, examples, run, onExample }) {
     const modeSelect = document.getElementById(modeSelectId);
     const input = document.getElementById(inputId);
     const output = document.getElementById(outputId);
@@ -419,6 +422,7 @@
         modeSelect.value = ex.mode;
         modeSelect.dispatchEvent(new Event("change"));
         input.value = ex.value;
+        onExample?.(ex);
         execute();
       };
       examplesEl.appendChild(btn);
@@ -427,8 +431,8 @@
     function execute() {
       output.textContent = "Loading reference data…";
       loadDataModule()
-        .then((mod) => {
-          const result = run(mod, modeSelect.value, input.value);
+        .then((mod) => Promise.resolve(run(mod, modeSelect.value, input.value)))
+        .then((result) => {
           output.textContent = JSON.stringify(result, null, 2);
         })
         .catch((err) => {
@@ -442,6 +446,11 @@
     });
   }
 
+  const POSTAL_FIELD_IDS = ["province", "regency", "district", "village"];
+  function checkedPostalFields() {
+    return POSTAL_FIELD_IDS.filter((f) => document.getElementById(`postal-field-${f}`).checked);
+  }
+
   wireLookup({
     modeSelectId: "postal-mode",
     inputId: "postal-input",
@@ -449,13 +458,27 @@
     outputId: "postal-output",
     examplesId: "postal-examples",
     examples: POSTAL_EXAMPLES,
+    onExample: (ex) => {
+      document.getElementById("postal-level").value = ex.level ?? "district";
+      for (const f of POSTAL_FIELD_IDS) {
+        document.getElementById(`postal-field-${f}`).checked = !!ex.fields?.[f];
+      }
+    },
     run: (mod, mode, value) => {
-      if (mode === "toName") return mod.resolvePostalCode(value);
+      const fields = checkedPostalFields();
+      if (mode === "toName") {
+        // No fields checked -> cheap default (same shape as the old sync
+        // resolvePostalCode). Any field checked, incl. "village", drives
+        // granularity/fields on the richer async function.
+        if (fields.length === 0) return mod.resolvePostalCode(value);
+        return mod.resolvePostalCodeVillages(value, {
+          granularity: fields.includes("village") ? "village" : "district",
+          fields,
+        });
+      }
       const level = document.getElementById("postal-level").value;
-      const outputFormat = document.getElementById("postal-output-format").value;
-      return outputFormat === "all"
-        ? mod.searchPostalCodesByName(value, { level, output: "all" })
-        : mod.searchPostalCodesByName(value, { level });
+      if (fields.length === 0) return mod.searchVillagesByName(value, { level });
+      return mod.searchVillagesByName(value, { level, output: "rows", fields });
     },
   });
 
