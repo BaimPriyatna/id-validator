@@ -43,6 +43,88 @@ if (postalCode.validate(code).valid) {
 - `lookupPlateRegion(code)` -> `{ code, areas } | null` — **community-sourced, not official** (see below)
 - `searchPlateCodesByArea(query)` -> `{ code, areas }[]` — reverse of `lookupPlateRegion`: area name -> plate region code(s). Case-insensitive substring match against each code's area list
 
+### Village-level (desa/kelurahan) — async, lazy-loaded
+
+Everything above resolves down to district (kecamatan) level and loads
+eagerly with the rest of this package. Three more functions go one level
+deeper, to individual desa/kelurahan — but the dataset behind them is
+~2.5 MB raw / ~650 KB gzipped, so it's dynamically `import()`-ed only when
+actually needed, not bundled with everything else. **These are the only
+async functions in this package** — everything above stays synchronous,
+and calls that don't ask for village-level data never trigger the load at
+all (see the `fields` note below).
+
+**Read this before using them:** going to village level does **not** fix
+the ambiguity in `lookupPostalCode`/`resolvePostalCode` — 7.52% of postal
+codes genuinely span more than one district (kecamatan) regardless of
+which level you look at, a real property of how codes were assigned, not
+an artifact of aggregating to district level. What village data *does*
+add is completeness of the address name itself (matching how Indonesian
+postal-code sites conventionally show the desa name even when the code is
+shared), and — for the ~17.56% of districts (1,279 of 7,285) that
+genuinely have more than one postal code across their villages — the
+ability to narrow a code down to which specific village(s) carry it. The
+rest, including kecamatan Batujaya below, share one code across every
+village in them.
+
+There's no free-text village-name search. If you already know a village's
+parent province/regency/district codes (a cascading address form), use
+`listVillagesInDistrict` — a plain key lookup, cheaper than any name
+match. If you don't, `searchVillagesByName` still searches by
+province/regency/district name (`level` is required and excludes
+`"village"` on purpose) and can attach village rows to the result via
+`fields`.
+
+- `listVillagesInDistrict(provinceCode, regencyCode, districtCode)` -> `Promise<Village[]>` — every village in one district, exact key lookup, no name matching at all
+- `searchVillagesByName(query, { level, ... })` -> `Promise<string[] | PostalMatch[]>` — region name -> postal code(s), same idea as `searchPostalCodesByName` but able to reach down to village rows
+  - `level`: **required**, `"province" | "regency" | "district"` — which level `query` matches against, case-insensitive substring. No `"village"` option and no default: whatever's calling this already knows which field it's searching against
+  - `output`: `"codes"` (default) — deduplicated, sorted `string[]`, never touches the village dataset regardless of `fields`. `"rows"` — `PostalMatch[]`, one row per unique combination of the requested `fields` (see below)
+  - `fields` (only used by `output: "rows"`): which levels to attach to each row — an array (`["district", "village"]`, must be in hierarchical order) or a colon-joined string mixing full names and single-letter shorthands (`"district:village"`, `"d:v"`, `"district:v"` all work; `"prov"` is rejected — only full names or `p`/`r`/`d`/`v`). Defaults to `[level]` alone: searching at `level: "district"` attaches only `district` to each row unless you ask for more. Including `"village"` is what triggers the lazy load
+  - `districtName` / `regencyName`: **exact match** (unlike `query` itself) — extra narrowing, independent of `level`. `regencyName` accepts the name with or without its "Kabupaten"/"Kota" prefix
+- `resolvePostalCodeVillages(code, { granularity, fields })` -> `Promise<PostalMatch[]>` — postal code -> region(s)
+  - `granularity`: `"district"` (default, identical output to the sync `resolvePostalCode` — doesn't touch the village dataset at all) or `"village"` (only villages that actually carry this exact code, since one district can have several — e.g. kec Gambir has 6)
+  - `fields`: same array-or-string form as above. Defaults to `["province", "regency", "district"]` for `granularity: "district"`, or all four for `"village"`
+- `isValidFieldOrder(fields)` / `parseFieldsString(input)` -> exported in case you want to validate or parse a `fields` value yourself before calling
+
+**How rows are built:** every match (a village row, if `fields` includes
+`"village"`, otherwise a district) is projected down to `postalCode` plus
+only the requested `fields`, then rows that are now identical get
+collapsed into one. This is why `level: "province", fields: "province"`
+gives one row per unique postal code in that whole province — every
+underlying village row shares the same (province-only) projection except
+for `postalCode` — while adding `"district"` to `fields` splits that back
+out to one row per `(district, postalCode)` pair. `output: "codes"`
+inherits `searchPostalCodesByName`'s existing "blind union" behavior on a
+broad or genuinely duplicated name (e.g. kecamatan "Bandung" exists in
+Kota Bandung, Tulungagung, *and* Serang) — every match's codes get merged
+into one flat array with no attribution. Narrow with `districtName`/
+`regencyName` first, or use `output: "rows"`, when that matters.
+
+```ts
+import { searchVillagesByName, resolvePostalCodeVillages, listVillagesInDistrict } from "@idvalidator/data-id-address";
+
+// Default fields = [level] only -- no province/regency attached.
+await searchVillagesByName("batujaya", { level: "district", regencyName: "Karawang", output: "rows" });
+// [{ postalCode: "41354", district: { name: "Batujaya", ... } }]
+
+// Ask for village rows explicitly -- explodes to all 10 desa, same code.
+await searchVillagesByName("batujaya", {
+  level: "district",
+  regencyName: "Karawang",
+  fields: "district:village",
+  output: "rows",
+});
+// 10 rows, each { postalCode: "41354", district: {...}, village: {...} }
+
+// kec Gambir has 6 postal codes across its villages -- narrow to which villages have this one.
+await resolvePostalCodeVillages("10110", { granularity: "village" });
+// [{ postalCode: "10110", province: {...}, regency: {...}, district: {...Gambir}, village: { name: "Gambir", ... } }]
+
+// Already know the codes (e.g. from a cascading form)? Skip search entirely.
+await listVillagesInDistrict("32", "15", "08"); // kec Batujaya
+// [{ name: "Batujaya", code: "1001", ... }, { name: "Telukambulu", ... }, ...10 total]
+```
+
 ```ts
 import { searchPostalCodesByName, searchPlateCodesByArea } from "@idvalidator/data-id-address";
 
@@ -80,6 +162,18 @@ you do.
   (MIT License), derived from an 83,762-row village-level dataset. Every
   district code in this index was cross-checked against `admin-hierarchy.json`
   with zero mismatches.
+- `data/village-postal-index.json` — village (desa/kelurahan) codes + names
+  + postal code, grouped by district. Source: Kepmendagri No.
+  300.2.2-2138 Tahun 2025, via github.com/cahyadsn/wilayah (`db/wilayah.sql`,
+  MIT License) joined with github.com/cahyadsn/wilayah_kodepos
+  (`json/wilayah_kodepos.min.json`, MIT License) — 83,762 villages, all
+  resolving to a postal code (0 missing). Built with
+  `npm run build:data:village`, run manually when upstream data changes
+  (this file is committed, not regenerated on every `npm run build`).
+  Note this is a slightly older Kepmendagri revision (2138) than
+  `admin-hierarchy.json`'s (2430); despite that, all 7,285 district codes
+  matched exactly (0 mismatches) when cross-checked, so the two sources
+  join cleanly regardless.
 - `data/plate-region-codes.json` — vehicle plate region code -> area name(s).
   **Not from an official dataset** — see the section below.
 

@@ -137,6 +137,11 @@ export function resolvePostalCode(code: string): ResolvedAddress[] {
   return lookupPostalCode(code).map((match) => resolveAddress(match));
 }
 
+/** Postal code(s) for one district, from the same eager postal-index.json reverse map resolvePostalCode() uses -- no village dataset involved. */
+export function postalCodesForDistrict(provinceCode: string, regencyCode: string, districtCode: string): string[] {
+  return DISTRICT_POSTAL_CODES.get(`${provinceCode}:${regencyCode}:${districtCode}`) ?? [];
+}
+
 export interface PostalCodeNameMatch {
   postalCode: string;
   province: Province;
@@ -168,7 +173,7 @@ export interface SearchPostalCodesOptions {
   output?: "codes" | "all";
 }
 
-function districtsMatchingLevel(level: PostalSearchLevel, q: string): typeof adminData.districts {
+export function districtsMatchingLevel(level: PostalSearchLevel, q: string): District[] {
   if (level === "district") {
     return adminData.districts.filter((d) => d.name.toLowerCase().includes(q));
   }
@@ -242,3 +247,8 @@ export function searchPlateCodesByArea(query: string): PlateRegionMatch[] {
   if (!q) return [];
   return plateData.codes.filter((c) => c.areas.some((area) => area.toLowerCase().includes(q)));
 }
+
+// Re-exporting doesn't defeat village.ts's lazy-loading: this just exposes
+// the function names statically, it doesn't execute the dynamic import()
+// inside them until a caller actually invokes one.
+export * from "./village.js";

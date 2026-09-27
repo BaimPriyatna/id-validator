@@ -20,6 +20,14 @@ All notable changes to this project will be documented in this file.
   straight to region names), `searchPostalCodesByName(query, { level, output })` (region name
   -> postal code(s), the reverse), and `searchPlateCodesByArea(query)`
   (area name -> plate region code(s), the reverse of `lookupPlateRegion`)
+- `@idvalidator/data-id-address`: village-level (desa/kelurahan) support —
+  `listVillagesInDistrict`, `searchVillagesByName`, `resolvePostalCodeVillages`
+  (all async, lazy-load a separate ~2.5MB/~650KB gzip dataset only when
+  actually used), plus `isValidFieldOrder`/`parseFieldsString` helpers.
+  Bumped to `1.1.0` (non-breaking). Note: this does **not** reduce
+  reverse-lookup ambiguity (7.52% of postal codes genuinely span more than
+  one district at any granularity) — see the package README before
+  assuming otherwise
 
 ### Fixed
 
