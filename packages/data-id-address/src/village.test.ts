@@ -136,6 +136,12 @@ describe("searchVillagesByName", () => {
     expect(Object.keys(rows[0])).toEqual(["postalCode"]);
   });
 
+  it("throws on an invalid fields array (reversed order), same as the string form", async () => {
+    await expect(
+      searchVillagesByName("batujaya", { level: "district", fields: ["village", "district"], output: "rows" }),
+    ).rejects.toThrow(/hierarchical order/);
+  });
+
   it("returns an empty array for a blank query", async () => {
     expect(await searchVillagesByName("   ", { level: "district" })).toEqual([]);
   });

@@ -11,17 +11,29 @@
  *
  *   node scripts/build-village-data.mjs
  *
- * Verifies its own join (every village must resolve to exactly one postal
- * code) and fails loudly rather than writing a partial/corrupt dataset.
+ * Pinned to specific commits, not master/main HEAD, so re-running this
+ * later reproduces the exact same output rather than silently picking up
+ * whatever upstream has changed to since. To intentionally pick up new
+ * upstream data: check the latest commit on each repo's default branch,
+ * update the two SHAs below, then re-run -- the cross-validation against
+ * admin-hierarchy.json (see checkDistrictsMatchAdminHierarchy) will fail
+ * loudly if the new data's district codes have drifted from what
+ * admin-hierarchy.json currently has (e.g. a Kepmendagri revision that
+ * split/merged/renumbered a region), instead of writing a dataset that
+ * would silently misjoin with the rest of this package.
  */
-import { writeFileSync } from "node:fs";
+import { readFileSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
-const WILAYAH_SQL_URL = "https://raw.githubusercontent.com/cahyadsn/wilayah/master/db/wilayah.sql";
-const KODEPOS_JSON_URL =
-  "https://raw.githubusercontent.com/cahyadsn/wilayah_kodepos/main/json/wilayah_kodepos.min.json";
+const WILAYAH_COMMIT = "0d1237a5eef926629c69d287cf2282006144f4fa";
+const WILAYAH_KODEPOS_COMMIT = "ba8497156c5cc9bcbfc527f7b8875d403eda2354";
+const WILAYAH_SQL_URL = `https://raw.githubusercontent.com/cahyadsn/wilayah/${WILAYAH_COMMIT}/db/wilayah.sql`;
+const KODEPOS_JSON_URL = `https://raw.githubusercontent.com/cahyadsn/wilayah_kodepos/${WILAYAH_KODEPOS_COMMIT}/json/wilayah_kodepos.min.json`;
 const OUTPUT_PATH = fileURLToPath(
   new URL("../packages/data-id-address/data/village-postal-index.json", import.meta.url),
+);
+const ADMIN_HIERARCHY_PATH = fileURLToPath(
+  new URL("../packages/data-id-address/data/admin-hierarchy.json", import.meta.url),
 );
 
 async function fetchText(url) {
@@ -60,6 +72,41 @@ function parseWilayahSql(sql) {
   return villages;
 }
 
+function loadAdminDistrictKeys() {
+  const admin = JSON.parse(readFileSync(ADMIN_HIERARCHY_PATH, "utf8"));
+  return new Set(admin.districts.map((d) => `${d.provinceCode}:${d.regencyCode}:${d.code}`));
+}
+
+/**
+ * Guards against silently shipping a village dataset whose district codes
+ * no longer line up with admin-hierarchy.json (the source every lookup in
+ * this package resolves province/regency/district names through). A drift
+ * here means a village would resolve to a district that doesn't exist
+ * elsewhere in the package, or vice versa -- almost always caused by an
+ * upstream boundary change (region split/merge/renumbering) landing in one
+ * source but not the other yet.
+ */
+function checkDistrictsMatchAdminHierarchy(villageDistrictKeys) {
+  const adminKeys = loadAdminDistrictKeys();
+  const onlyInVillageData = [...villageDistrictKeys].filter((k) => !adminKeys.has(k));
+  const onlyInAdminData = [...adminKeys].filter((k) => !villageDistrictKeys.has(k));
+
+  if (onlyInVillageData.length > 0 || onlyInAdminData.length > 0) {
+    throw new Error(
+      "District codes no longer match admin-hierarchy.json exactly -- refusing to write a " +
+        "dataset that would silently misjoin with the rest of this package.\n" +
+        `${onlyInVillageData.length} district(s) only in the new village data` +
+        (onlyInVillageData.length > 0 ? ` (e.g. ${onlyInVillageData.slice(0, 5).join(", ")})` : "") +
+        `.\n${onlyInAdminData.length} district(s) only in admin-hierarchy.json` +
+        (onlyInAdminData.length > 0 ? ` (e.g. ${onlyInAdminData.slice(0, 5).join(", ")})` : "") +
+        ".\nThis usually means upstream boundaries changed (a regency/district split, merge, " +
+        "or renumbering) in one source but not the other -- admin-hierarchy.json likely needs " +
+        "to be regenerated from the same upstream revision before this script can produce a " +
+        "consistent dataset.",
+    );
+  }
+}
+
 async function main() {
   console.log("Fetching wilayah.sql...");
   const sql = await fetchText(WILAYAH_SQL_URL);
@@ -94,11 +141,14 @@ async function main() {
     throw new Error("Internal error: row count changed during grouping.");
   }
 
+  checkDistrictsMatchAdminHierarchy(new Set(Object.keys(byDistrict)));
+
   const dataset = {
     meta: {
       version: "kepmendagri-300.2.2-2138-2025",
       source:
-        "github.com/cahyadsn/wilayah (db/wilayah.sql) + github.com/cahyadsn/wilayah_kodepos " +
+        `github.com/cahyadsn/wilayah@${WILAYAH_COMMIT} (db/wilayah.sql) + ` +
+        `github.com/cahyadsn/wilayah_kodepos@${WILAYAH_KODEPOS_COMMIT} ` +
         "(json/wilayah_kodepos.min.json), both MIT License",
       updatedAt: new Date().toISOString().slice(0, 10),
       note:
