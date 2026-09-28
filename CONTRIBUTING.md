@@ -54,6 +54,58 @@ Every validator must:
   (see `sim`, `passport`, and `lookupPlateRegion` for the pattern) rather
   than presenting it at the same confidence level as sourced data.
 
+### Data Update Process
+
+Reference data is checked quarterly for upstream updates:
+
+1. **Automated reminders:** `.github/workflows/data-update-reminder.yml` creates
+   an issue every quarter (Jan/Apr/Jul/Oct) with a checklist of all data sources
+   to check.
+2. **Manual checks:** You can also use `.github/ISSUE_TEMPLATE/data-update.md`
+   to create an ad-hoc data update check issue when notified of upstream changes.
+3. **Sources to monitor:**
+   - Indonesia: Kepmendagri publications (provinces, regencies, districts, postal codes, villages)
+     via [cahyadsn/wilayah](https://github.com/cahyadsn/wilayah) and
+     [lokabisa-oss/region-id](https://github.com/lokabisa-oss/region-id)
+   - Global: ISO 3166-1 (countries), ISO 4217 (currencies), ITU-T E.164 (phone codes)
+4. **After updating data:**
+   - Run `npm run build:data:village` if village data changed
+   - Run full test suite: `npm test`
+   - Check bundle sizes: `npm run size` (must pass configured limits)
+   - Update `CHANGELOG.md` with source version changes
+   - Update `REFERENCE.md` if data structure changed
+
+See the quarterly issue template for the complete checklist.
+
+## Bundle Size Budgets
+
+Bundle sizes are enforced via `size-limit` and checked in CI on every PR.
+
+**Current limits** (see `.size-limit.js` for full list):
+- `@idvalidator/core`: 6 KB gzip
+- `idvalidator-id` full: 75 KB minified
+- `idvalidator-id` NIK only (tree-shaken): 36 KB
+- `@idvalidator/data-id-address` base: 45 KB
+- Village data (lazy-loaded): 680 KB gzip
+
+**Check locally:**
+```bash
+npm run build
+npm run size
+```
+
+**If size limit exceeded:**
+1. Verify your change is the cause: `git stash`, rebuild, re-check.
+2. If legitimate (e.g., new official regions added to dataset):
+   - Update the limit in `.size-limit.js` with a comment explaining why
+   - Mention in PR description and `CHANGELOG.md`
+3. If unexpected:
+   - Check for accidental imports of large dependencies
+   - Verify tree-shaking is working (imports should be specific, not `import *`)
+   - For large new datasets, consider the async+lazy-load pattern (see `ARCHITECTURE.md` § "Large Dataset Handling")
+
+CI will fail if bundle size exceeds configured limits.
+
 ## Releasing
 
 ### One-time setup

@@ -153,8 +153,19 @@ npm install
 npm run build      # builds all packages (dual ESM/CJS + .d.ts via tsup)
 npm test           # vitest, all packages
 npm run typecheck  # tsc --noEmit per package
+npm run size       # check bundle sizes against configured limits
 npm run bench      # performance (see BENCHMARKS.md)
 ```
+
+**Bundle size enforcement:** All packages have configured size budgets
+(`.size-limit.js`) checked automatically in CI. Run `npm run size` locally
+before submitting PRs that add features or data. See
+[`CONTRIBUTING.md`](CONTRIBUTING.md) § "Bundle Size Budgets" for limits and
+how to handle legitimate increases.
+
+**Data update schedule:** Reference data (Kepmendagri regions, ISO codes,
+etc.) is checked quarterly via automated reminders. See
+[`.github/workflows/data-update-reminder.yml`](.github/workflows/data-update-reminder.yml).
 
 See [`CONTRIBUTING.md`](CONTRIBUTING.md) for adding a validator, opening
 issues/PRs, and cutting a release. Community norms are in

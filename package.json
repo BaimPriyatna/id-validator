@@ -21,6 +21,7 @@
     "typecheck": "tsc -b --noEmit",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
+    "size": "size-limit",
     "clean": "npm run clean --workspaces --if-present"
   },
   "engines": {
@@ -28,6 +29,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.15.0",
+    "@size-limit/preset-small-lib": "14.1.0",
     "@vitest/coverage-v8": "^2.1.0",
     "eslint": "^9.15.0",
     "tsup": "8.5.1",

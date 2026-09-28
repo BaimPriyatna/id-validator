@@ -198,6 +198,154 @@ Not every validator implements every stage:
 
 The public API exposes only operations that are meaningful for the specific data type.
 
+## Large Dataset Handling: Async + Lazy-Load Pattern
+
+**Problem:** Some reference datasets are too large to bundle unconditionally. For example, village-level (desa/kelurahan) address data for Indonesia is ~2.5 MB raw / ~650 KB gzipped. Bundling it with every import penalizes users who never need that granularity.
+
+**Solution:** Async lazy-loading via dynamic `import()`. The dataset is:
+- Stored as a separate JSON module
+- Imported dynamically only when a function explicitly requiring it is called
+- Never loaded if the user stays at coarser granularity (e.g. district-level lookups)
+
+### When to Use This Pattern
+
+Use async lazy-loading when:
+1. **Dataset is substantially larger** than the rest of the package (>500 KB raw, or >3× the base package size)
+2. **Feature is optional** — most users can accomplish their task without it
+3. **Clear API boundary** — async functions can be separated from sync ones without breaking the mental model
+
+Do NOT use this pattern when:
+- Dataset is small enough to bundle without concern (< 100 KB gzipped)
+- Feature is core functionality used by majority of consumers
+- Async/sync split would confuse the API (e.g., `validate()` being async-sometimes-sync depending on options)
+
+### Implementation Guidelines
+
+**1. Separate the large dataset:**
+
+```
+packages/data-id-address/
+├── data/
+│   ├── admin-hierarchy.json        (bundled, ~30 KB — always needed)
+│   └── village-postal-index.json   (lazy, ~650 KB — optional)
+└── src/
+    ├── index.ts                     (sync API, imports admin-hierarchy)
+    └── village.ts                   (async API, dynamic import of village data)
+```
+
+**2. Export async functions that trigger the load:**
+
+```ts
+// village.ts
+let villageData: VillageDataset | null = null;
+
+async function loadVillageData(): Promise<VillageDataset> {
+  if (villageData) return villageData;
+  // Dynamic import — this line triggers the load
+  villageData = await import("../data/village-postal-index.json");
+  return villageData;
+}
+
+export async function listVillagesInDistrict(
+  provinceCode: string,
+  regencyCode: string,
+  districtCode: string
+): Promise<Village[]> {
+  const data = await loadVillageData();
+  return data.villages[`${provinceCode}${regencyCode}${districtCode}`] || [];
+}
+```
+
+**3. Provide a fast path that never loads the dataset:**
+
+If an API accepts options that *might* need the large dataset but often don't, check the options before loading:
+
+```ts
+export async function searchByName(
+  query: string,
+  options: { fields?: AdminField[] }
+): Promise<Result[]> {
+  const fields = options.fields || ["district"];
+  
+  // Fast path: if fields doesn't include "village", never load village data
+  if (!fields.includes("village")) {
+    return searchDistrictLevel(query); // sync lookup, no dynamic import
+  }
+  
+  // Slow path: user explicitly asked for village-level data
+  const data = await loadVillageData();
+  return searchWithVillages(query, data);
+}
+```
+
+**4. Document the async boundary clearly:**
+
+In README/API docs:
+- Mark which functions are async and why
+- Explain the bundle-size tradeoff
+- Show when the dataset is/isn't loaded
+
+Example from `@idvalidator/data-id-address`:
+
+> ### Village-level (desa/kelurahan) — async, lazy-loaded
+>
+> Everything above resolves down to district (kecamatan) level and loads
+> eagerly with the rest of this package. Three more functions go one level
+> deeper, to individual desa/kelurahan — but the dataset behind them is
+> ~2.5 MB raw / ~650 KB gzipped, so it's dynamically `import()`-ed only when
+> actually needed, not bundled with everything else. **These are the only
+> async functions in this package** — everything above stays synchronous,
+> and calls that don't ask for village-level data never trigger the load at
+> all.
+
+**5. Test the lazy-load behavior:**
+
+Verify the fast path never loads the dataset:
+
+```ts
+// village.test.ts
+describe("lazy-load: fast path never loads village dataset", () => {
+  const specifier = "../data/village-postal-index.json";
+  
+  beforeEach(() => {
+    // Clear module cache
+    vi.resetModules();
+  });
+  
+  it("searchByName with fields excluding 'village' never imports dataset", async () => {
+    const importSpy = vi.spyOn(await import("node:module"), "createRequire");
+    
+    await searchByName("Jakarta", { fields: ["province", "district"] });
+    
+    expect(importSpy).not.toHaveBeenCalledWith(
+      expect.stringContaining(specifier)
+    );
+  });
+});
+```
+
+### Canonical Example
+
+**Reference implementation:** `@idvalidator/data-id-address` (`packages/data-id-address/`)
+
+- Sync API (index.ts): province/regency/district lookups, postal code reverse index — ~30 KB bundled
+- Async API (village.ts): village-level (desa/kelurahan) data — ~650 KB, lazy-loaded
+- Functions: `listVillagesInDistrict()`, `searchVillagesByName()`, `resolvePostalCodeVillages()`
+- Fast path: `searchVillagesByName(..., { fields: ["district"] })` never loads village data even though the function signature is async
+
+This pattern lets users who need only district-level address resolution pay ~30 KB, while users who need complete village granularity pay ~680 KB total, loaded on-demand.
+
+### Pattern for Other Countries
+
+If another country needs similar functionality (e.g., US ZIP code → city/county with a large dataset):
+
+1. Keep the base validators + lightweight reference data synchronous
+2. Put the large dataset in a separate JSON file
+3. Export async functions from a separate module (e.g., `us-postal-extended.ts`)
+4. Use dynamic `import()` with memoization
+5. Provide fast-path options that bypass the load when possible
+6. Document the async boundary and bundle-size tradeoff clearly
+
 ## Validation vs Verification
 
 id-validator performs local validation, not authoritative verification. Validation determines whether input conforms to supported structural and semantic rules:
