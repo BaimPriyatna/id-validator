@@ -1,46 +1,92 @@
+<h1 align="center">ID Validator</h1>
+
 <p align="center">
   <em>Type-safe validation, normalization, parsing, and formatting for country-specific and global structured data</em>
 </p>
 
-[![CI](https://github.com/BaimPriyatna/id-validator/actions/workflows/ci.yml/badge.svg)](https://github.com/BaimPriyatna/id-validator/actions/workflows/ci.yml)
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Node.js 18+](https://img.shields.io/badge/node-%3E%3D18-brightgreen.svg)](package.json)
-[![Version](https://img.shields.io/badge/version-1.0.2-informational.svg)](CHANGELOG.md)
+<p align="center">
+  <a href="https://github.com/BaimPriyatna/id-validator/actions/workflows/ci.yml"><img src="https://github.com/BaimPriyatna/id-validator/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT"></a>
+  <a href="package.json"><img src="https://img.shields.io/badge/node-%3E%3D18-brightgreen.svg" alt="Node.js 18+"></a>
+  <a href="CHANGELOG.md"><img src="https://img.shields.io/badge/version-1.0.2-informational.svg" alt="Version"></a>
+  <img src="https://img.shields.io/badge/TypeScript-ready-3178c6.svg" alt="TypeScript ready">
+  <img src="https://img.shields.io/badge/third--party%20deps-0-success.svg" alt="No third-party runtime dependencies">
+</p>
 
-One API style. Many countries. Local validation. No network.
+<p align="center">
+  One API style. Many countries. Local validation. No network.<br>
+  <strong><a href="https://baimpriyatna.github.io/id-validator/">Try it in the browser →</a></strong> — no install required.
+</p>
+
+---
+
+## Highlights
+
+- **One consistent API** — every validator exposes the same
+  `validate` / `normalize` / `parse` / `format` shape (where it makes sense),
+  and every failure carries a stable error `code`.
+- **Country-aware naming** — `nik`, `npwp`, `sim`, not a vague `nationalId`.
+- **Runs locally** — no network calls, no API keys, no telemetry. Safe for
+  forms, backends, edge functions, and the browser.
+- **Fast** — ~1M NIK validations/sec on a laptop ([benchmarks](./BENCHMARKS.md)).
+- **Typed end to end** — dual ESM/CJS builds with full `.d.ts` / `.d.cts`.
+- **Modular** — country packages never depend on each other, and address
+  reference data lives in its own optional package.
+
+---
+
+## Quick start
 
 ```bash
 npm install idvalidator-id
 ```
 
 ```ts
-import { nik, npwp, phone, postalCode, licensePlate } from "idvalidator-id";
+import { nik, phone, postalCode, licensePlate } from "idvalidator-id";
 
+nik.validate("3171051708900001");
+// { valid: true, errors: [], value: "3171051708900001" }
+
+nik.parse("3171051708900001");
+// { provinceCode: "31", regencyCode: "71", districtCode: "05",
+//   birthDate: "1990-08-17", gender: "male", sequence: "0001" }
+
+phone.validate("+6281234567890");   // { valid: true, ... }
+postalCode.validate("40115");       // { valid: true, ... }
+licensePlate.validate("B 1234 XYZ"); // { valid: true, ... }
+```
+
+Results are plain objects, so branching is straightforward:
+
+```ts
 const result = nik.validate(input);
-if (result.valid) {
-  // ...
+if (!result.valid) {
+  for (const error of result.errors) console.log(error.code, error.message);
 }
 ```
 
-**[Try it in the browser →](https://baimpriyatna.github.io/id-validator/)** — no install required.
+Error codes are documented in [ERROR-CODES.md](./ERROR-CODES.md).
 
----
+### Turning codes into names (optional)
 
-## Table of Contents
+Want real region names instead of numeric codes? Add the optional address data
+package:
 
-- [Important](#important)
-- [Architecture](#architecture)
-- [Packages](#packages)
-- [Status (v1)](#status-v1)
-- [Framework examples](#framework-examples)
-- [Performance](#performance)
-- [Requirements](#requirements)
-- [Development](#development)
-- [Project Structure](#project-structure)
-- [Known Limitations](#known-limitations)
-- [Compatibility](#compatibility)
-- [Roadmap](#roadmap)
-- [License](#license)
+```bash
+npm install @idvalidator/data-id-address
+```
+
+```ts
+import { nik } from "idvalidator-id";
+import { resolveAddress, resolvePostalCode } from "@idvalidator/data-id-address";
+
+resolveAddress(nik.parse("3171051708900001"));
+// { province: { code: "31", name: "Daerah Khusus Ibukota Jakarta" },
+//   regency:  { code: "71", name: "Kota Administrasi Jakarta Pusat" },
+//   district: { code: "05", name: "Cempaka Putih" } }
+
+resolvePostalCode("40115"); // province / regency / district names for the code
+```
 
 ---
 
@@ -56,24 +102,78 @@ if (result.valid) {
 
 ---
 
+## Table of Contents
+
+- [Highlights](#highlights)
+- [Quick start](#quick-start)
+- [Important](#important)
+- [Architecture](#architecture)
+- [Packages](#packages)
+- [Status (v1)](#status-v1)
+- [Address data](#address-data)
+- [Framework examples](#framework-examples)
+- [Performance](#performance)
+- [Requirements](#requirements)
+- [Development](#development)
+- [Project Structure](#project-structure)
+- [Known Limitations](#known-limitations)
+- [Compatibility](#compatibility)
+- [Roadmap](#roadmap)
+- [Contributing](#contributing)
+- [License and data attribution](#license-and-data-attribution)
+
+---
+
 ## Architecture
 
-```
-                    ID Validator
-                         │
-                 @idvalidator/core
-                         │
-            ┌────────────┴────────────┐
-            │                         │
-       Global Rules              Country Rules
-            │                         │
-      ┌─────┼─────┐            ┌──────┼──────┐
-      │     │     │            │      │      │
-    Phone Email  ...           ID     US     ...
-                               │      │
-                              NIK    SSN
-                              NPWP   EIN
-                              ...    ...
+```mermaid
+%%{init: {"layout": "elk", "flowchart": {"curve": "stepBefore"}}}%%
+flowchart TD
+    ROOT["<b>ID Validator</b>"]
+    CORE["<b>@idvalidator/core</b>"]
+
+    GLOBAL["<b>Global Rules</b>"]
+    COUNTRY["<b>Country Rules</b>"]
+
+    PHONE["<b>@idvalidator/global-phone</b><br/>E.164 phone"]
+    EMAIL["<b>@idvalidator/global-email</b><br/>structural email"]
+    GLOBAL_MORE["<i>…</i>"]
+
+    ID["<b>idvalidator-id</b>"]
+    US["<i>id-validator-us</i><br/>planned"]
+    COUNTRY_MORE["<i>…</i>"]
+
+    ID_RULES["NIK · NPWP · SIM<br/>Passport · Postal Code<br/>License Plate"]
+    US_RULES["SSN · EIN<br/>…"]
+
+    ADDR["<b>@idvalidator/data-id-address</b><br/>optional · address reference data"]
+
+    ROOT --> CORE
+    CORE --> GLOBAL
+    CORE --> COUNTRY
+
+    GLOBAL --> PHONE
+    GLOBAL --> EMAIL
+    GLOBAL --> GLOBAL_MORE
+
+    COUNTRY --> ID
+    COUNTRY --> US
+    COUNTRY --> COUNTRY_MORE
+
+    ID --> ID_RULES
+    US --> US_RULES
+
+    ADDR -. "used alongside" .-> ID
+
+    classDef root fill:none,stroke-width:2px;
+    classDef category fill:none,stroke-width:1.5px;
+    classDef planned stroke-dasharray:5 5,fill:none;
+    classDef optional stroke-dasharray:2 4;
+
+    class ROOT root;
+    class GLOBAL,COUNTRY category;
+    class US,COUNTRY_MORE planned;
+    class ADDR optional;
 ```
 
 - **Country-aware** — each country package (`id-validator-<cc>`) uses the
@@ -100,7 +200,7 @@ what each one does and does **not** check, is in
 | `idvalidator-id` | Indonesia: NIK, NPWP, SIM, Passport, Postal Code, License Plate, Phone, Email |
 | `@idvalidator/global-phone` | E.164 phone validation, reused by every country package |
 | `@idvalidator/global-email` | Structural email validation, reused by every country package |
-| `@idvalidator/data-id-address` *(optional)* | Indonesia province/regency/district/postal/plate-region reference data — see [Known Limitations](#known-limitations) |
+| `@idvalidator/data-id-address` *(optional)* | Indonesia address reference data: province / regency / district, postal-code lookups in both directions, village (desa/kelurahan) data, and plate-region codes — see [Address data](#address-data) |
 
 ---
 
@@ -112,6 +212,81 @@ what each one does and does **not** check, is in
 | `postalCode` | validate/normalize only — see `@idvalidator/data-id-address` (optional) for province/regency/district lookup |
 | `sim`, `passport` | heuristic validate-only (no consolidated public spec) |
 | `email` (global) | fully implemented — validate/normalize/parse |
+
+---
+
+## Address data
+
+`@idvalidator/data-id-address` is deliberately a separate, optional package:
+the reference datasets are large, and most validation use cases don't need
+them. Full API details live in the
+[package README](./packages/data-id-address/README.md); the overview:
+
+| Need | Function |
+| --- | --- |
+| NIK codes → names | `resolveAddress(nik.parse(...))` |
+| Postal code → region(s) | `lookupPostalCode`, `resolvePostalCode` |
+| Region name → postal code(s) | `searchPostalCodesByName(query, { level, output })` |
+| Plate region code ↔ area | `lookupPlateRegion`, `searchPlateCodesByArea` |
+| Villages of a district (for cascading dropdowns) | `listVillagesInDistrict(provinceCode, regencyCode, districtCode)` |
+| Region name → postal code(s), down to village rows | `searchVillagesByName(query, { level, output, fields })` |
+| Postal code → region(s) and villages | `resolvePostalCodeVillages(code, { granularity, fields })` |
+
+### Village-level (desa/kelurahan) data
+
+Village functions are **async** and load a separate dataset (~2.5 MB raw,
+~0.65 MB gzipped) **lazily, only when a call actually asks for village data**.
+Everything else in the package stays synchronous and never triggers that load.
+
+```ts
+import {
+  listVillagesInDistrict,
+  searchVillagesByName,
+  resolvePostalCodeVillages,
+} from "@idvalidator/data-id-address";
+
+// Every village in Kecamatan Batujaya, Karawang (exact key lookup, no name matching)
+await listVillagesInDistrict("32", "15", "08");
+// [{ provinceCode: "32", regencyCode: "15", districtCode: "08", code: "2001", name: "Batujaya" },
+//  { ..., code: "2002", name: "Telukambulu" }, ...]
+
+// Name → postal code. Rows default to the level you searched at.
+await searchVillagesByName("batujaya", { level: "district", output: "rows" });
+// [{ postalCode: "41354", district: { code: "08", name: "Batujaya", ... } }]
+
+// Choose which levels are attached. `fields` accepts an array or a colon string,
+// mixing full names and single-letter shorthands ("province:d" and "p:d" both work).
+await searchVillagesByName("batujaya", { level: "district", output: "rows", fields: "p:d" });
+// [{ postalCode: "41354", province: { name: "Jawa Barat" }, district: { name: "Batujaya" } }]
+
+// Postal code → every village that carries it
+await resolvePostalCodeVillages("41354", { granularity: "village", fields: "d:v" });
+```
+
+A few rules worth knowing:
+
+- `postalCode` is always present on every row; `fields` only controls which
+  region levels are attached next to it.
+- `fields` must be in hierarchical order (`province` → `regency` → `district`
+  → `village`), but any subset is allowed. `"district:village"` is valid,
+  `"village:district"` is rejected, and so is `"prov"` (only full names or
+  `p` / `r` / `d` / `v`).
+- `level` is required for name searches and accepts `province`, `regency`, or
+  `district`. There is deliberately no free-text village-name search: if you
+  already know the district, use `listVillagesInDistrict`.
+- `output: "codes"` returns a deduplicated `string[]`. If `query` matches
+  several regions (for example, a kecamatan named "Bandung" exists in more than
+  one regency), those codes are merged with no way to tell which belongs to
+  which — use `output: "rows"` when you need attribution.
+
+> [!NOTE]
+> Village data adds **completeness** (the desa name next to the code, the way
+> postal-code sites show it), not disambiguation. About 7.5% of postal codes
+> genuinely span more than one kecamatan, and that figure is identical at
+> district and village granularity. Only ~17.5% of kecamatan have villages
+> with different postal codes; in the rest, every village shares one code.
+> NIKs encode down to kecamatan only, so village data cannot be derived from a
+> NIK.
 
 ---
 
@@ -151,11 +326,32 @@ npm run bench                               # Vitest + Tinybench
 ```bash
 npm install
 npm run build      # builds all packages (dual ESM/CJS + .d.ts via tsup)
+npm run typecheck  # tsc -b --noEmit
+npm run lint       # eslint
 npm test           # vitest, all packages
-npm run typecheck  # tsc --noEmit per package
 npm run size       # check bundle sizes against configured limits
 npm run bench      # performance (see BENCHMARKS.md)
 ```
+
+> [!TIP]
+> Run `npm run build` **before** `npm run typecheck` on a fresh clone. Packages
+> import each other through their built `dist/` output, so typechecking (or
+> opening the repo in an editor) before the first build reports
+> `Cannot find module '@idvalidator/core'` errors that disappear once the
+> packages are built.
+
+Other scripts:
+
+```bash
+npm run build:playground   # browser playground (deployed to GitHub Pages on push to main)
+npm run build:data:village # regenerate the village dataset from upstream (manual, see below)
+```
+
+`build:data:village` is intentionally **not** part of `npm run build`: it is
+reference data, not a derivative of source code. It pins both upstream
+repositories to specific commits and cross-validates district codes against
+`admin-hierarchy.json`, so a re-run is reproducible and fails loudly if
+upstream has drifted.
 
 **Bundle size enforcement:** All packages have configured size budgets
 (`.size-limit.js`) checked automatically in CI. Run `npm run size` locally
@@ -189,11 +385,14 @@ id-validator/
 ├── SECURITY.md
 ├── LICENSE
 ├── benchmarks/           # Vitest bench baseline JSON for --compare
-├── scripts/              # e.g. throughput.mjs
+├── playground/           # Browser playground (built to GitHub Pages)
+├── scripts/
+│   ├── throughput.mjs            # 100k wall-clock benchmark
+│   └── build-village-data.mjs    # village dataset builder (pinned upstream commits)
 ├── .github/
 │   ├── ISSUE_TEMPLATE/   # bug + feature issue forms
 │   ├── PULL_REQUEST_TEMPLATE.md
-│   └── workflows/        # CI (test) and release (publish) pipelines
+│   └── workflows/        # ci.yml (test), playground.yml (Pages), release.yml (publish)
 └── packages/
     ├── core/                     # @idvalidator/core
     ├── global/
@@ -201,6 +400,8 @@ id-validator/
     │   └── email/                # @idvalidator/global-email
     ├── id/                       # idvalidator-id
     └── data-id-address/          # @idvalidator/data-id-address (optional)
+        ├── data/                 # admin hierarchy, postal index, plate codes, village index
+        └── src/                  # index.ts (sync API), village.ts (async, lazy-loaded)
 ```
 
 ---
@@ -211,11 +412,14 @@ id-validator/
   the core package — see the [Status](#status-v1) table and
   [REFERENCE.md](./REFERENCE.md) for why (bundle-size budget, or no official spec to
   validate against).
-- `@idvalidator/data-id-address`'s province/regency/district/postal data
-  is sourced from official, MIT-licensed Kemendagri-aligned datasets. Its
-  vehicle plate region-code lookup (`lookupPlateRegion`) is the one
-  exception: it's **community-sourced, not official**, since no
-  machine-readable Korlantas/Polri dataset is known to exist.
+- `@idvalidator/data-id-address`'s province/regency/district/postal/village
+  data is sourced from MIT-licensed community datasets aligned with Kemendagri
+  codes (see [attribution](#license-and-data-attribution)). Its vehicle plate
+  region-code lookup (`lookupPlateRegion`) is **community-sourced, not
+  official**, since no machine-readable Korlantas/Polri dataset is known to
+  exist.
+- Postal-code reverse lookups can return more than one district (~7.5% of
+  codes). All matches are returned rather than guessing one.
 - **Tree-shaking works at the package level only, not per-validator.**
   `idvalidator-id` bundles all of its validators into a single
   `dist/index.js`. Importing just one validator (e.g. `import { postalCode }
@@ -254,6 +458,20 @@ tree-shaking (see Known Limitations above).
 
 ---
 
-## License
+## Contributing
+
+Bug reports, new validators, and data corrections are welcome. Start with
+[`CONTRIBUTING.md`](CONTRIBUTING.md), and please report security issues via
+[`SECURITY.md`](SECURITY.md) rather than a public issue.
+
+---
+
+## License and data attribution
 
 MIT — see [LICENSE](LICENSE).
+
+The village-level dataset is derived from two MIT-licensed upstream projects
+by [cahyadsn](https://github.com/cahyadsn):
+[`wilayah`](https://github.com/cahyadsn/wilayah) (region codes and names) and
+[`wilayah_kodepos`](https://github.com/cahyadsn/wilayah_kodepos) (village →
+postal code). Thank you to the maintainers.
