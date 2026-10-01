@@ -468,7 +468,7 @@ Bug reports, new validators, and data corrections are welcome. Start with
 
 ## License and data attribution
 
-MIT — see [LICENSE](LICENSE).
+Apache License 2.0 — see [LICENSE](LICENSE).
 
 The village-level dataset is derived from two MIT-licensed upstream projects
 by [cahyadsn](https://github.com/cahyadsn):
