@@ -89,7 +89,7 @@ function validate(input: unknown, options?: ValidationOptions): ValidationResult
     };
   }
 
-  return { valid: true, errors: [], value: normalized };
+  return { valid: true, errors: [], value: normalized, confidence: "registry" };
 }
 
 function isValid(input: unknown, options?: ValidationOptions): boolean {

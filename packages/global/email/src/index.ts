@@ -64,7 +64,7 @@ function validate(input: unknown, options?: ValidationOptions): ValidationResult
     };
   }
 
-  return { valid: true, errors: [], value: normalized };
+  return { valid: true, errors: [], value: normalized, confidence: "structural" };
 }
 
 function parse(input: string): ParsedEmail {

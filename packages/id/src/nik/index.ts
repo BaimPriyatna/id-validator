@@ -133,7 +133,10 @@ function validate(input: unknown, options?: ValidationOptions): ValidationResult
   }
 
   if (errors.length > 0) return { valid: false, errors };
-  return { valid: true, errors: [], value: normalized };
+  // Registry check against Kemendagri province/regency codes. Indonesian NIK has
+  // NO checksum digit, so this is "registry", not "cryptographic" -- it rules
+  // out impossible region codes but a well-formed number is not proven real.
+  return { valid: true, errors: [], value: normalized, confidence: "registry" };
 }
 
 function resolveYear(twoDigitYear: number): number {

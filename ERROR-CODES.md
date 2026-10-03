@@ -2,7 +2,43 @@
 
 This document consolidates all error codes used across the id-validator library and documents their stability guarantees.
 
-## Error Code Stability
+## Validation confidence
+
+`validate()` returns a `confidence` field describing what the validator
+actually proved about a **valid** result. It is absent on invalid results.
+
+| Level | Meaning | Validators |
+| --- | --- | --- |
+| `cryptographic` | A mathematical check digit was verified | `iban`, `npwp` (legacy 15-digit) |
+| `registry` | Checked against an official reference dataset | `nik`, `npwp` (16-digit NIK-based), `phone`, `currency` |
+| `structural` | Format, length and pattern only | `postalCode`, `licensePlate`, `email` |
+| `heuristic` | Shape only — any value of the right shape passes | `sim`, `passport` |
+
+```ts
+import { sim, nik } from "idvalidator-id";
+
+sim.validate("000000000000");
+// { valid: true, ..., confidence: "heuristic" }  <- passes, but proves nothing
+
+nik.validate("1601010101010001");
+// { valid: true, ..., confidence: "registry" }
+```
+
+Use it to gate on strength rather than on which validator you happen to call:
+
+```ts
+const result = sim.validate(input);
+if (result.valid && result.confidence === "heuristic") {
+  // treat as a format check only; do not treat as proof of identity
+}
+```
+
+Note that Indonesian NIK has **no** checksum digit, so `nik` is `registry`,
+not `cryptographic` — it verifies province/regency codes against the
+Kemendagri reference table but cannot detect a well-formed number that was
+never issued.
+
+Error Code Stability
 
 Error codes in this library follow a **stable contract**:
 
@@ -12,11 +48,83 @@ Error codes in this library follow a **stable contract**:
 - Error code removal or semantic changes require a major version bump
 - Error **messages** (the human-readable text) may be improved in minor releases without being considered a breaking change
 
-## Core Error Codes
+## Validation confidence
+
+`validate()` returns a `confidence` field describing what the validator
+actually proved about a **valid** result. It is absent on invalid results.
+
+| Level | Meaning | Validators |
+| --- | --- | --- |
+| `cryptographic` | A mathematical check digit was verified | `iban`, `npwp` (legacy 15-digit) |
+| `registry` | Checked against an official reference dataset | `nik`, `npwp` (16-digit NIK-based), `phone`, `currency` |
+| `structural` | Format, length and pattern only | `postalCode`, `licensePlate`, `email` |
+| `heuristic` | Shape only — any value of the right shape passes | `sim`, `passport` |
+
+```ts
+import { sim, nik } from "idvalidator-id";
+
+sim.validate("000000000000");
+// { valid: true, ..., confidence: "heuristic" }  <- passes, but proves nothing
+
+nik.validate("1601010101010001");
+// { valid: true, ..., confidence: "registry" }
+```
+
+Use it to gate on strength rather than on which validator you happen to call:
+
+```ts
+const result = sim.validate(input);
+if (result.valid && result.confidence === "heuristic") {
+  // treat as a format check only; do not treat as proof of identity
+}
+```
+
+Note that Indonesian NIK has **no** checksum digit, so `nik` is `registry`,
+not `cryptographic` — it verifies province/regency codes against the
+Kemendagri reference table but cannot detect a well-formed number that was
+never issued.
+
+Core Error Codes
 
 These codes are defined in `@idvalidator/core` and used across all validators:
 
-### `REQUIRED`
+### Validation confidence
+
+`validate()` returns a `confidence` field describing what the validator
+actually proved about a **valid** result. It is absent on invalid results.
+
+| Level | Meaning | Validators |
+| --- | --- | --- |
+| `cryptographic` | A mathematical check digit was verified | `iban`, `npwp` (legacy 15-digit) |
+| `registry` | Checked against an official reference dataset | `nik`, `npwp` (16-digit NIK-based), `phone`, `currency` |
+| `structural` | Format, length and pattern only | `postalCode`, `licensePlate`, `email` |
+| `heuristic` | Shape only — any value of the right shape passes | `sim`, `passport` |
+
+```ts
+import { sim, nik } from "idvalidator-id";
+
+sim.validate("000000000000");
+// { valid: true, ..., confidence: "heuristic" }  <- passes, but proves nothing
+
+nik.validate("1601010101010001");
+// { valid: true, ..., confidence: "registry" }
+```
+
+Use it to gate on strength rather than on which validator you happen to call:
+
+```ts
+const result = sim.validate(input);
+if (result.valid && result.confidence === "heuristic") {
+  // treat as a format check only; do not treat as proof of identity
+}
+```
+
+Note that Indonesian NIK has **no** checksum digit, so `nik` is `registry`,
+not `cryptographic` — it verifies province/regency codes against the
+Kemendagri reference table but cannot detect a well-formed number that was
+never issued.
+
+`REQUIRED`
 **Status:** Stable  
 **Introduced:** v1.0.0  
 **Meaning:** Input is required but was not provided (null, undefined, or empty after normalization)
@@ -31,7 +139,43 @@ nik.validate(null)
 
 ---
 
-### `INVALID_TYPE`
+### Validation confidence
+
+`validate()` returns a `confidence` field describing what the validator
+actually proved about a **valid** result. It is absent on invalid results.
+
+| Level | Meaning | Validators |
+| --- | --- | --- |
+| `cryptographic` | A mathematical check digit was verified | `iban`, `npwp` (legacy 15-digit) |
+| `registry` | Checked against an official reference dataset | `nik`, `npwp` (16-digit NIK-based), `phone`, `currency` |
+| `structural` | Format, length and pattern only | `postalCode`, `licensePlate`, `email` |
+| `heuristic` | Shape only — any value of the right shape passes | `sim`, `passport` |
+
+```ts
+import { sim, nik } from "idvalidator-id";
+
+sim.validate("000000000000");
+// { valid: true, ..., confidence: "heuristic" }  <- passes, but proves nothing
+
+nik.validate("1601010101010001");
+// { valid: true, ..., confidence: "registry" }
+```
+
+Use it to gate on strength rather than on which validator you happen to call:
+
+```ts
+const result = sim.validate(input);
+if (result.valid && result.confidence === "heuristic") {
+  // treat as a format check only; do not treat as proof of identity
+}
+```
+
+Note that Indonesian NIK has **no** checksum digit, so `nik` is `registry`,
+not `cryptographic` — it verifies province/regency codes against the
+Kemendagri reference table but cannot detect a well-formed number that was
+never issued.
+
+`INVALID_TYPE`
 **Status:** Stable  
 **Meaning:** Input is not a string type (received number, boolean, object, array, etc.)
 
@@ -45,7 +189,43 @@ nik.validate(123456)
 
 ---
 
-### `INVALID_LENGTH`
+### Validation confidence
+
+`validate()` returns a `confidence` field describing what the validator
+actually proved about a **valid** result. It is absent on invalid results.
+
+| Level | Meaning | Validators |
+| --- | --- | --- |
+| `cryptographic` | A mathematical check digit was verified | `iban`, `npwp` (legacy 15-digit) |
+| `registry` | Checked against an official reference dataset | `nik`, `npwp` (16-digit NIK-based), `phone`, `currency` |
+| `structural` | Format, length and pattern only | `postalCode`, `licensePlate`, `email` |
+| `heuristic` | Shape only — any value of the right shape passes | `sim`, `passport` |
+
+```ts
+import { sim, nik } from "idvalidator-id";
+
+sim.validate("000000000000");
+// { valid: true, ..., confidence: "heuristic" }  <- passes, but proves nothing
+
+nik.validate("1601010101010001");
+// { valid: true, ..., confidence: "registry" }
+```
+
+Use it to gate on strength rather than on which validator you happen to call:
+
+```ts
+const result = sim.validate(input);
+if (result.valid && result.confidence === "heuristic") {
+  // treat as a format check only; do not treat as proof of identity
+}
+```
+
+Note that Indonesian NIK has **no** checksum digit, so `nik` is `registry`,
+not `cryptographic` — it verifies province/regency codes against the
+Kemendagri reference table but cannot detect a well-formed number that was
+never issued.
+
+`INVALID_LENGTH`
 **Status:** Stable  
 **Introduced:** v1.0.0  
 **Meaning:** Input length does not match the expected fixed length, or exceeds maximum allowed length
@@ -63,7 +243,43 @@ nik.validate("1".repeat(1001))
 
 ---
 
-### `INVALID_FORMAT`
+### Validation confidence
+
+`validate()` returns a `confidence` field describing what the validator
+actually proved about a **valid** result. It is absent on invalid results.
+
+| Level | Meaning | Validators |
+| --- | --- | --- |
+| `cryptographic` | A mathematical check digit was verified | `iban`, `npwp` (legacy 15-digit) |
+| `registry` | Checked against an official reference dataset | `nik`, `npwp` (16-digit NIK-based), `phone`, `currency` |
+| `structural` | Format, length and pattern only | `postalCode`, `licensePlate`, `email` |
+| `heuristic` | Shape only — any value of the right shape passes | `sim`, `passport` |
+
+```ts
+import { sim, nik } from "idvalidator-id";
+
+sim.validate("000000000000");
+// { valid: true, ..., confidence: "heuristic" }  <- passes, but proves nothing
+
+nik.validate("1601010101010001");
+// { valid: true, ..., confidence: "registry" }
+```
+
+Use it to gate on strength rather than on which validator you happen to call:
+
+```ts
+const result = sim.validate(input);
+if (result.valid && result.confidence === "heuristic") {
+  // treat as a format check only; do not treat as proof of identity
+}
+```
+
+Note that Indonesian NIK has **no** checksum digit, so `nik` is `registry`,
+not `cryptographic` — it verifies province/regency codes against the
+Kemendagri reference table but cannot detect a well-formed number that was
+never issued.
+
+`INVALID_FORMAT`
 **Status:** Stable  
 **Introduced:** v1.0.0  
 **Meaning:** Input does not match the expected structural pattern
@@ -78,7 +294,43 @@ email.validate("not-an-email")
 
 ---
 
-### `INVALID_CHECKSUM`
+### Validation confidence
+
+`validate()` returns a `confidence` field describing what the validator
+actually proved about a **valid** result. It is absent on invalid results.
+
+| Level | Meaning | Validators |
+| --- | --- | --- |
+| `cryptographic` | A mathematical check digit was verified | `iban`, `npwp` (legacy 15-digit) |
+| `registry` | Checked against an official reference dataset | `nik`, `npwp` (16-digit NIK-based), `phone`, `currency` |
+| `structural` | Format, length and pattern only | `postalCode`, `licensePlate`, `email` |
+| `heuristic` | Shape only — any value of the right shape passes | `sim`, `passport` |
+
+```ts
+import { sim, nik } from "idvalidator-id";
+
+sim.validate("000000000000");
+// { valid: true, ..., confidence: "heuristic" }  <- passes, but proves nothing
+
+nik.validate("1601010101010001");
+// { valid: true, ..., confidence: "registry" }
+```
+
+Use it to gate on strength rather than on which validator you happen to call:
+
+```ts
+const result = sim.validate(input);
+if (result.valid && result.confidence === "heuristic") {
+  // treat as a format check only; do not treat as proof of identity
+}
+```
+
+Note that Indonesian NIK has **no** checksum digit, so `nik` is `registry`,
+not `cryptographic` — it verifies province/regency codes against the
+Kemendagri reference table but cannot detect a well-formed number that was
+never issued.
+
+`INVALID_CHECKSUM`
 **Status:** Stable  
 **Introduced:** v1.0.0  
 **Meaning:** Input has a valid structure but fails checksum validation
@@ -93,9 +345,81 @@ npwp.validate("012345678901234")
 
 ---
 
-## Domain-Specific Error Codes
+## Validation confidence
 
-### `INVALID_REGION_CODE`
+`validate()` returns a `confidence` field describing what the validator
+actually proved about a **valid** result. It is absent on invalid results.
+
+| Level | Meaning | Validators |
+| --- | --- | --- |
+| `cryptographic` | A mathematical check digit was verified | `iban`, `npwp` (legacy 15-digit) |
+| `registry` | Checked against an official reference dataset | `nik`, `npwp` (16-digit NIK-based), `phone`, `currency` |
+| `structural` | Format, length and pattern only | `postalCode`, `licensePlate`, `email` |
+| `heuristic` | Shape only — any value of the right shape passes | `sim`, `passport` |
+
+```ts
+import { sim, nik } from "idvalidator-id";
+
+sim.validate("000000000000");
+// { valid: true, ..., confidence: "heuristic" }  <- passes, but proves nothing
+
+nik.validate("1601010101010001");
+// { valid: true, ..., confidence: "registry" }
+```
+
+Use it to gate on strength rather than on which validator you happen to call:
+
+```ts
+const result = sim.validate(input);
+if (result.valid && result.confidence === "heuristic") {
+  // treat as a format check only; do not treat as proof of identity
+}
+```
+
+Note that Indonesian NIK has **no** checksum digit, so `nik` is `registry`,
+not `cryptographic` — it verifies province/regency codes against the
+Kemendagri reference table but cannot detect a well-formed number that was
+never issued.
+
+Domain-Specific Error Codes
+
+### Validation confidence
+
+`validate()` returns a `confidence` field describing what the validator
+actually proved about a **valid** result. It is absent on invalid results.
+
+| Level | Meaning | Validators |
+| --- | --- | --- |
+| `cryptographic` | A mathematical check digit was verified | `iban`, `npwp` (legacy 15-digit) |
+| `registry` | Checked against an official reference dataset | `nik`, `npwp` (16-digit NIK-based), `phone`, `currency` |
+| `structural` | Format, length and pattern only | `postalCode`, `licensePlate`, `email` |
+| `heuristic` | Shape only — any value of the right shape passes | `sim`, `passport` |
+
+```ts
+import { sim, nik } from "idvalidator-id";
+
+sim.validate("000000000000");
+// { valid: true, ..., confidence: "heuristic" }  <- passes, but proves nothing
+
+nik.validate("1601010101010001");
+// { valid: true, ..., confidence: "registry" }
+```
+
+Use it to gate on strength rather than on which validator you happen to call:
+
+```ts
+const result = sim.validate(input);
+if (result.valid && result.confidence === "heuristic") {
+  // treat as a format check only; do not treat as proof of identity
+}
+```
+
+Note that Indonesian NIK has **no** checksum digit, so `nik` is `registry`,
+not `cryptographic` — it verifies province/regency codes against the
+Kemendagri reference table but cannot detect a well-formed number that was
+never issued.
+
+`INVALID_REGION_CODE`
 **Status:** Stable  
 **Introduced:** v1.0.0  
 **Meaning:** Administrative region code (province, regency, or district) is not recognized in the reference dataset
@@ -110,7 +434,43 @@ nik.validate("9971051708900001")
 
 ---
 
-### `INVALID_DATE`
+### Validation confidence
+
+`validate()` returns a `confidence` field describing what the validator
+actually proved about a **valid** result. It is absent on invalid results.
+
+| Level | Meaning | Validators |
+| --- | --- | --- |
+| `cryptographic` | A mathematical check digit was verified | `iban`, `npwp` (legacy 15-digit) |
+| `registry` | Checked against an official reference dataset | `nik`, `npwp` (16-digit NIK-based), `phone`, `currency` |
+| `structural` | Format, length and pattern only | `postalCode`, `licensePlate`, `email` |
+| `heuristic` | Shape only — any value of the right shape passes | `sim`, `passport` |
+
+```ts
+import { sim, nik } from "idvalidator-id";
+
+sim.validate("000000000000");
+// { valid: true, ..., confidence: "heuristic" }  <- passes, but proves nothing
+
+nik.validate("1601010101010001");
+// { valid: true, ..., confidence: "registry" }
+```
+
+Use it to gate on strength rather than on which validator you happen to call:
+
+```ts
+const result = sim.validate(input);
+if (result.valid && result.confidence === "heuristic") {
+  // treat as a format check only; do not treat as proof of identity
+}
+```
+
+Note that Indonesian NIK has **no** checksum digit, so `nik` is `registry`,
+not `cryptographic` — it verifies province/regency codes against the
+Kemendagri reference table but cannot detect a well-formed number that was
+never issued.
+
+`INVALID_DATE`
 **Status:** Stable  
 **Introduced:** v1.0.0  
 **Meaning:** Date component (day or month) is out of valid range
@@ -125,7 +485,43 @@ nik.validate("3171059908900001")
 
 ---
 
-### `INVALID_SEQUENCE`
+### Validation confidence
+
+`validate()` returns a `confidence` field describing what the validator
+actually proved about a **valid** result. It is absent on invalid results.
+
+| Level | Meaning | Validators |
+| --- | --- | --- |
+| `cryptographic` | A mathematical check digit was verified | `iban`, `npwp` (legacy 15-digit) |
+| `registry` | Checked against an official reference dataset | `nik`, `npwp` (16-digit NIK-based), `phone`, `currency` |
+| `structural` | Format, length and pattern only | `postalCode`, `licensePlate`, `email` |
+| `heuristic` | Shape only — any value of the right shape passes | `sim`, `passport` |
+
+```ts
+import { sim, nik } from "idvalidator-id";
+
+sim.validate("000000000000");
+// { valid: true, ..., confidence: "heuristic" }  <- passes, but proves nothing
+
+nik.validate("1601010101010001");
+// { valid: true, ..., confidence: "registry" }
+```
+
+Use it to gate on strength rather than on which validator you happen to call:
+
+```ts
+const result = sim.validate(input);
+if (result.valid && result.confidence === "heuristic") {
+  // treat as a format check only; do not treat as proof of identity
+}
+```
+
+Note that Indonesian NIK has **no** checksum digit, so `nik` is `registry`,
+not `cryptographic` — it verifies province/regency codes against the
+Kemendagri reference table but cannot detect a well-formed number that was
+never issued.
+
+`INVALID_SEQUENCE`
 **Status:** Stable  
 **Introduced:** v1.0.0  
 **Meaning:** Sequence number component is invalid (e.g., all zeros when not allowed)
@@ -140,7 +536,43 @@ nik.validate("3171051708900000")
 
 ---
 
-### `MISSING_CALLING_CODE`
+### Validation confidence
+
+`validate()` returns a `confidence` field describing what the validator
+actually proved about a **valid** result. It is absent on invalid results.
+
+| Level | Meaning | Validators |
+| --- | --- | --- |
+| `cryptographic` | A mathematical check digit was verified | `iban`, `npwp` (legacy 15-digit) |
+| `registry` | Checked against an official reference dataset | `nik`, `npwp` (16-digit NIK-based), `phone`, `currency` |
+| `structural` | Format, length and pattern only | `postalCode`, `licensePlate`, `email` |
+| `heuristic` | Shape only — any value of the right shape passes | `sim`, `passport` |
+
+```ts
+import { sim, nik } from "idvalidator-id";
+
+sim.validate("000000000000");
+// { valid: true, ..., confidence: "heuristic" }  <- passes, but proves nothing
+
+nik.validate("1601010101010001");
+// { valid: true, ..., confidence: "registry" }
+```
+
+Use it to gate on strength rather than on which validator you happen to call:
+
+```ts
+const result = sim.validate(input);
+if (result.valid && result.confidence === "heuristic") {
+  // treat as a format check only; do not treat as proof of identity
+}
+```
+
+Note that Indonesian NIK has **no** checksum digit, so `nik` is `registry`,
+not `cryptographic` — it verifies province/regency codes against the
+Kemendagri reference table but cannot detect a well-formed number that was
+never issued.
+
+`MISSING_CALLING_CODE`
 **Status:** Stable  
 **Introduced:** v1.0.0  
 **Meaning:** Phone number does not include a country calling code (E.164 requires "+")
@@ -155,7 +587,43 @@ phone.validate("12345678")
 
 ---
 
-### `UNKNOWN_CALLING_CODE`
+### Validation confidence
+
+`validate()` returns a `confidence` field describing what the validator
+actually proved about a **valid** result. It is absent on invalid results.
+
+| Level | Meaning | Validators |
+| --- | --- | --- |
+| `cryptographic` | A mathematical check digit was verified | `iban`, `npwp` (legacy 15-digit) |
+| `registry` | Checked against an official reference dataset | `nik`, `npwp` (16-digit NIK-based), `phone`, `currency` |
+| `structural` | Format, length and pattern only | `postalCode`, `licensePlate`, `email` |
+| `heuristic` | Shape only — any value of the right shape passes | `sim`, `passport` |
+
+```ts
+import { sim, nik } from "idvalidator-id";
+
+sim.validate("000000000000");
+// { valid: true, ..., confidence: "heuristic" }  <- passes, but proves nothing
+
+nik.validate("1601010101010001");
+// { valid: true, ..., confidence: "registry" }
+```
+
+Use it to gate on strength rather than on which validator you happen to call:
+
+```ts
+const result = sim.validate(input);
+if (result.valid && result.confidence === "heuristic") {
+  // treat as a format check only; do not treat as proof of identity
+}
+```
+
+Note that Indonesian NIK has **no** checksum digit, so `nik` is `registry`,
+not `cryptographic` — it verifies province/regency codes against the
+Kemendagri reference table but cannot detect a well-formed number that was
+never issued.
+
+`UNKNOWN_CALLING_CODE`
 **Status:** Stable  
 **Introduced:** v1.0.0  
 **Meaning:** Country calling code is not recognized in the reference dataset
@@ -170,9 +638,81 @@ phone.validate("+9991234567890")
 
 ---
 
-## Error Code Usage Patterns
+## Validation confidence
 
-### Single Error vs. Multiple Errors
+`validate()` returns a `confidence` field describing what the validator
+actually proved about a **valid** result. It is absent on invalid results.
+
+| Level | Meaning | Validators |
+| --- | --- | --- |
+| `cryptographic` | A mathematical check digit was verified | `iban`, `npwp` (legacy 15-digit) |
+| `registry` | Checked against an official reference dataset | `nik`, `npwp` (16-digit NIK-based), `phone`, `currency` |
+| `structural` | Format, length and pattern only | `postalCode`, `licensePlate`, `email` |
+| `heuristic` | Shape only — any value of the right shape passes | `sim`, `passport` |
+
+```ts
+import { sim, nik } from "idvalidator-id";
+
+sim.validate("000000000000");
+// { valid: true, ..., confidence: "heuristic" }  <- passes, but proves nothing
+
+nik.validate("1601010101010001");
+// { valid: true, ..., confidence: "registry" }
+```
+
+Use it to gate on strength rather than on which validator you happen to call:
+
+```ts
+const result = sim.validate(input);
+if (result.valid && result.confidence === "heuristic") {
+  // treat as a format check only; do not treat as proof of identity
+}
+```
+
+Note that Indonesian NIK has **no** checksum digit, so `nik` is `registry`,
+not `cryptographic` — it verifies province/regency codes against the
+Kemendagri reference table but cannot detect a well-formed number that was
+never issued.
+
+Error Code Usage Patterns
+
+### Validation confidence
+
+`validate()` returns a `confidence` field describing what the validator
+actually proved about a **valid** result. It is absent on invalid results.
+
+| Level | Meaning | Validators |
+| --- | --- | --- |
+| `cryptographic` | A mathematical check digit was verified | `iban`, `npwp` (legacy 15-digit) |
+| `registry` | Checked against an official reference dataset | `nik`, `npwp` (16-digit NIK-based), `phone`, `currency` |
+| `structural` | Format, length and pattern only | `postalCode`, `licensePlate`, `email` |
+| `heuristic` | Shape only — any value of the right shape passes | `sim`, `passport` |
+
+```ts
+import { sim, nik } from "idvalidator-id";
+
+sim.validate("000000000000");
+// { valid: true, ..., confidence: "heuristic" }  <- passes, but proves nothing
+
+nik.validate("1601010101010001");
+// { valid: true, ..., confidence: "registry" }
+```
+
+Use it to gate on strength rather than on which validator you happen to call:
+
+```ts
+const result = sim.validate(input);
+if (result.valid && result.confidence === "heuristic") {
+  // treat as a format check only; do not treat as proof of identity
+}
+```
+
+Note that Indonesian NIK has **no** checksum digit, so `nik` is `registry`,
+not `cryptographic` — it verifies province/regency codes against the
+Kemendagri reference table but cannot detect a well-formed number that was
+never issued.
+
+Single Error vs. Multiple Errors
 
 Validators return arrays of errors to support validation scenarios that may have multiple independent issues:
 
@@ -193,7 +733,43 @@ nik.validate("0000059908900000")
 // }
 ```
 
-### Error Message Customization
+### Validation confidence
+
+`validate()` returns a `confidence` field describing what the validator
+actually proved about a **valid** result. It is absent on invalid results.
+
+| Level | Meaning | Validators |
+| --- | --- | --- |
+| `cryptographic` | A mathematical check digit was verified | `iban`, `npwp` (legacy 15-digit) |
+| `registry` | Checked against an official reference dataset | `nik`, `npwp` (16-digit NIK-based), `phone`, `currency` |
+| `structural` | Format, length and pattern only | `postalCode`, `licensePlate`, `email` |
+| `heuristic` | Shape only — any value of the right shape passes | `sim`, `passport` |
+
+```ts
+import { sim, nik } from "idvalidator-id";
+
+sim.validate("000000000000");
+// { valid: true, ..., confidence: "heuristic" }  <- passes, but proves nothing
+
+nik.validate("1601010101010001");
+// { valid: true, ..., confidence: "registry" }
+```
+
+Use it to gate on strength rather than on which validator you happen to call:
+
+```ts
+const result = sim.validate(input);
+if (result.valid && result.confidence === "heuristic") {
+  // treat as a format check only; do not treat as proof of identity
+}
+```
+
+Note that Indonesian NIK has **no** checksum digit, so `nik` is `registry`,
+not `cryptographic` — it verifies province/regency codes against the
+Kemendagri reference table but cannot detect a well-formed number that was
+never issued.
+
+Error Message Customization
 
 Validators support per-call message overrides:
 
@@ -212,9 +788,81 @@ Resolution order:
 
 ---
 
-## Versioning and Breaking Changes
+## Validation confidence
 
-### What Constitutes a Breaking Change
+`validate()` returns a `confidence` field describing what the validator
+actually proved about a **valid** result. It is absent on invalid results.
+
+| Level | Meaning | Validators |
+| --- | --- | --- |
+| `cryptographic` | A mathematical check digit was verified | `iban`, `npwp` (legacy 15-digit) |
+| `registry` | Checked against an official reference dataset | `nik`, `npwp` (16-digit NIK-based), `phone`, `currency` |
+| `structural` | Format, length and pattern only | `postalCode`, `licensePlate`, `email` |
+| `heuristic` | Shape only — any value of the right shape passes | `sim`, `passport` |
+
+```ts
+import { sim, nik } from "idvalidator-id";
+
+sim.validate("000000000000");
+// { valid: true, ..., confidence: "heuristic" }  <- passes, but proves nothing
+
+nik.validate("1601010101010001");
+// { valid: true, ..., confidence: "registry" }
+```
+
+Use it to gate on strength rather than on which validator you happen to call:
+
+```ts
+const result = sim.validate(input);
+if (result.valid && result.confidence === "heuristic") {
+  // treat as a format check only; do not treat as proof of identity
+}
+```
+
+Note that Indonesian NIK has **no** checksum digit, so `nik` is `registry`,
+not `cryptographic` — it verifies province/regency codes against the
+Kemendagri reference table but cannot detect a well-formed number that was
+never issued.
+
+Versioning and Breaking Changes
+
+### Validation confidence
+
+`validate()` returns a `confidence` field describing what the validator
+actually proved about a **valid** result. It is absent on invalid results.
+
+| Level | Meaning | Validators |
+| --- | --- | --- |
+| `cryptographic` | A mathematical check digit was verified | `iban`, `npwp` (legacy 15-digit) |
+| `registry` | Checked against an official reference dataset | `nik`, `npwp` (16-digit NIK-based), `phone`, `currency` |
+| `structural` | Format, length and pattern only | `postalCode`, `licensePlate`, `email` |
+| `heuristic` | Shape only — any value of the right shape passes | `sim`, `passport` |
+
+```ts
+import { sim, nik } from "idvalidator-id";
+
+sim.validate("000000000000");
+// { valid: true, ..., confidence: "heuristic" }  <- passes, but proves nothing
+
+nik.validate("1601010101010001");
+// { valid: true, ..., confidence: "registry" }
+```
+
+Use it to gate on strength rather than on which validator you happen to call:
+
+```ts
+const result = sim.validate(input);
+if (result.valid && result.confidence === "heuristic") {
+  // treat as a format check only; do not treat as proof of identity
+}
+```
+
+Note that Indonesian NIK has **no** checksum digit, so `nik` is `registry`,
+not `cryptographic` — it verifies province/regency codes against the
+Kemendagri reference table but cannot detect a well-formed number that was
+never issued.
+
+What Constitutes a Breaking Change
 
 **Breaking changes (require major version bump):**
 - Removing an error code
@@ -226,7 +874,43 @@ Resolution order:
 - Improving error message text
 - Adding more validation checks that introduce existing error codes
 
-### Deprecation Process
+### Validation confidence
+
+`validate()` returns a `confidence` field describing what the validator
+actually proved about a **valid** result. It is absent on invalid results.
+
+| Level | Meaning | Validators |
+| --- | --- | --- |
+| `cryptographic` | A mathematical check digit was verified | `iban`, `npwp` (legacy 15-digit) |
+| `registry` | Checked against an official reference dataset | `nik`, `npwp` (16-digit NIK-based), `phone`, `currency` |
+| `structural` | Format, length and pattern only | `postalCode`, `licensePlate`, `email` |
+| `heuristic` | Shape only — any value of the right shape passes | `sim`, `passport` |
+
+```ts
+import { sim, nik } from "idvalidator-id";
+
+sim.validate("000000000000");
+// { valid: true, ..., confidence: "heuristic" }  <- passes, but proves nothing
+
+nik.validate("1601010101010001");
+// { valid: true, ..., confidence: "registry" }
+```
+
+Use it to gate on strength rather than on which validator you happen to call:
+
+```ts
+const result = sim.validate(input);
+if (result.valid && result.confidence === "heuristic") {
+  // treat as a format check only; do not treat as proof of identity
+}
+```
+
+Note that Indonesian NIK has **no** checksum digit, so `nik` is `registry`,
+not `cryptographic` — it verifies province/regency codes against the
+Kemendagri reference table but cannot detect a well-formed number that was
+never issued.
+
+Deprecation Process
 
 If an error code needs to be removed or changed:
 
@@ -236,7 +920,43 @@ If an error code needs to be removed or changed:
 
 ---
 
-## Testing Error Codes
+## Validation confidence
+
+`validate()` returns a `confidence` field describing what the validator
+actually proved about a **valid** result. It is absent on invalid results.
+
+| Level | Meaning | Validators |
+| --- | --- | --- |
+| `cryptographic` | A mathematical check digit was verified | `iban`, `npwp` (legacy 15-digit) |
+| `registry` | Checked against an official reference dataset | `nik`, `npwp` (16-digit NIK-based), `phone`, `currency` |
+| `structural` | Format, length and pattern only | `postalCode`, `licensePlate`, `email` |
+| `heuristic` | Shape only — any value of the right shape passes | `sim`, `passport` |
+
+```ts
+import { sim, nik } from "idvalidator-id";
+
+sim.validate("000000000000");
+// { valid: true, ..., confidence: "heuristic" }  <- passes, but proves nothing
+
+nik.validate("1601010101010001");
+// { valid: true, ..., confidence: "registry" }
+```
+
+Use it to gate on strength rather than on which validator you happen to call:
+
+```ts
+const result = sim.validate(input);
+if (result.valid && result.confidence === "heuristic") {
+  // treat as a format check only; do not treat as proof of identity
+}
+```
+
+Note that Indonesian NIK has **no** checksum digit, so `nik` is `registry`,
+not `cryptographic` — it verifies province/regency codes against the
+Kemendagri reference table but cannot detect a well-formed number that was
+never issued.
+
+Testing Error Codes
 
 All error codes are covered by automated tests. When adding a new error code:
 
@@ -247,7 +967,43 @@ All error codes are covered by automated tests. When adding a new error code:
 
 ---
 
-## Related Documentation
+## Validation confidence
+
+`validate()` returns a `confidence` field describing what the validator
+actually proved about a **valid** result. It is absent on invalid results.
+
+| Level | Meaning | Validators |
+| --- | --- | --- |
+| `cryptographic` | A mathematical check digit was verified | `iban`, `npwp` (legacy 15-digit) |
+| `registry` | Checked against an official reference dataset | `nik`, `npwp` (16-digit NIK-based), `phone`, `currency` |
+| `structural` | Format, length and pattern only | `postalCode`, `licensePlate`, `email` |
+| `heuristic` | Shape only — any value of the right shape passes | `sim`, `passport` |
+
+```ts
+import { sim, nik } from "idvalidator-id";
+
+sim.validate("000000000000");
+// { valid: true, ..., confidence: "heuristic" }  <- passes, but proves nothing
+
+nik.validate("1601010101010001");
+// { valid: true, ..., confidence: "registry" }
+```
+
+Use it to gate on strength rather than on which validator you happen to call:
+
+```ts
+const result = sim.validate(input);
+if (result.valid && result.confidence === "heuristic") {
+  // treat as a format check only; do not treat as proof of identity
+}
+```
+
+Note that Indonesian NIK has **no** checksum digit, so `nik` is `registry`,
+not `cryptographic` — it verifies province/regency codes against the
+Kemendagri reference table but cannot detect a well-formed number that was
+never issued.
+
+Related Documentation
 
 - [ARCHITECTURE.md](./ARCHITECTURE.md) - System design and validation philosophy
 - [REFERENCE.md](./REFERENCE.md) - Complete API reference

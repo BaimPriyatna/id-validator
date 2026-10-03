@@ -73,7 +73,7 @@ function validate(input: unknown): ValidationResult<string> {
     };
   }
 
-  return { valid: true, errors: [], value: normalized };
+  return { valid: true, errors: [], value: normalized, confidence: "registry" };
 }
 
 function parse(input: string): ParsedPhone {

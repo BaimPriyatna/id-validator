@@ -43,7 +43,7 @@ function validateLegacy(digits: string): ValidationResult<string> {
   }
 
   if (errors.length > 0) return { valid: false, errors };
-  return { valid: true, errors: [], value: digits };
+  return { valid: true, errors: [], value: digits, confidence: "cryptographic" };
 }
 
 /**
@@ -60,7 +60,10 @@ function validateNikBased(digits: string): ValidationResult<string> {
       errors: result.errors.map((e: ValidationError) => makeError(e.code, `NIK-based NPWP: ${e.message}`)),
     };
   }
-  return { valid: true, errors: [], value: digits };
+  // The 16-digit form is just a NIK, so it inherits nik's "registry" tier
+  // (Kemendagri region codes, no checksum) rather than the legacy path's
+  // mod-11 "cryptographic" tier.
+  return { valid: true, errors: [], value: digits, confidence: "registry" };
 }
 
 function validate(input: unknown): ValidationResult<string> {

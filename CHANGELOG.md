@@ -6,6 +6,17 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- **`ValidationResult.confidence`** — a `cryptographic` / `registry` /
+  `structural` / `heuristic` field describing what each validator actually
+  proved about a valid result. Previously a consumer could not tell, without
+  reading the source, that `sim.validate("000000000000")` returns
+  `{ valid: true }` while `iban.validate(...)` verifies a mod-97-10 check
+  digit. Both report `valid: true`; only `confidence` distinguishes them.
+  Absent on invalid results. Purely additive — no existing code changes
+  behaviour. `nik` is `registry`, not `cryptographic`: Indonesian NIK has no
+  checksum digit, so it verifies province/regency codes but cannot detect a
+  well-formed number that was never issued.
+
 - **`@idvalidator/global-currency`** (new package, 1.0.0) — ISO 4217 currency
   reference data: code validation, registry lookups (by alpha or 3-digit
   numeric code, as used in ISO 8583 DE49 / card data), minor-unit precision, and

@@ -40,7 +40,9 @@ function validate(input: unknown): ValidationResult<string> {
     return { valid: false, errors };
   }
 
-  return { valid: true, errors: [], value: normalized };
+  // Plate region codes are only known via @idvalidator/data-id-address's
+  // community-sourced table, so this package checks pattern alone.
+  return { valid: true, errors: [], value: normalized, confidence: "structural" };
 }
 
 function parse(input: string): ParsedLicensePlate {

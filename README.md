@@ -428,6 +428,11 @@ id-validator/
   exist.
 - Postal-code reverse lookups can return more than one district (~7.5% of
   codes). All matches are returned rather than guessing one.
+- **`sim` and `passport` cannot detect an invalid number.** Both are
+  heuristic shape checks with no reference data, so `sim.validate("000000000000")`
+  and `passport.validate("Z0000000")` return `valid: true`. Use the
+  `confidence` field to detect this programmatically — it reports `"heuristic"`
+  for both, versus `"cryptographic"` for `iban` or the legacy 15-digit `npwp`.
 - **Tree-shaking works at the package level only, not per-validator.**
   `idvalidator-id` bundles all of its validators into a single
   `dist/index.js`. Importing just one validator (e.g. `import { postalCode }

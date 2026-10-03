@@ -167,7 +167,7 @@ function validate(input: unknown, options?: ValidateIbanOptions): ValidationResu
     };
   }
 
-  return { valid: true, errors: [], value: normalized };
+  return { valid: true, errors: [], value: normalized, confidence: "cryptographic" };
 }
 
 function parse(input: string): ParsedIban {

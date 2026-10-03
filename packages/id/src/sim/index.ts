@@ -28,7 +28,7 @@ function validate(input: unknown): ValidationResult<string> {
     };
   }
 
-  return { valid: true, errors: [], value: digits };
+  return { valid: true, errors: [], value: digits, confidence: "heuristic" };
 }
 
 /**
