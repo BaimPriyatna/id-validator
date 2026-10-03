@@ -1,31 +1,33 @@
 /**
- * Bundle size budgets for id-validator packages
+ * Bundle size budgets for id-validator packages.
+ *
+ * Superseded "Measured baseline (as of 2025-01)" figures below were estimates
+ * that did not match reality -- data-id-address was listed at ~30 KB when its
+ * entry point is in fact ~82 KB brotli (610 KB once the lazy village chunk is
+ * included). Limits are now measured values; see the header below.
  * 
- * Limits are set ~30-40% above current measured sizes to provide headroom during
- * active development while still catching significant regressions:
- * - Feature additions and code structure changes
- * - Legitimate data updates (new regions, postal codes, etc.)
- * - TypeScript/build tooling changes
- * - Early-stage API exploration
- * 
- * Measured baseline (as of 2025-01):
- * - idvalidator-id full: ~62 KB minified
- * - idvalidator-id NIK only: ~30 KB (includes province/regency dataset)
- * - @idvalidator/data-id-address base: ~30 KB
- * - @idvalidator/data-id-address with village: ~680 KB
- * 
- * Run: npm run size
- * CI: Runs on every PR to catch regressions
+ * Run: npm run size   (requires `npm run build` first)
+ * CI: bundle-size job in .github/workflows/ci.yml runs on every PR.
+ *
+ * COMPRESSION UNITS: size-limit's `gzip: true` measures gzip; `gzip: false`
+ * measures brotli (size-limit >= 11). Both appear below so each budget's
+ * unit is unambiguous.
+ *
+ * LIMITS ARE MEASURED + ~15% HEADROOM, NOT ESTIMATES. Every "measured" figure
+ * in the comments is what size-limit actually reported for the current tree.
+ * When a bundle legitimately grows (new feature, new district data), re-run
+ * `npm run size`, read the reported size, and set the limit to measured * 1.15.
+ * Do not round up to a "nice" number -- that erodes the gate.
  */
 
-module.exports = [
+export default [
   // ============================================================================
   // Core Package
   // ============================================================================
   {
     name: "@idvalidator/core - Full",
     path: "packages/core/dist/index.js",
-    limit: "8 KB",  // baseline ~4-5 KB gzip, +40% headroom
+    limit: "2 KB", // measured 502 B gzip
     gzip: true,
   },
 
@@ -35,7 +37,7 @@ module.exports = [
   {
     name: "idvalidator-id - Full package",
     path: "packages/id/dist/index.js",
-    limit: "90 KB",  // baseline ~62 KB, +45% headroom
+    limit: "9 KB", // measured 6.68 KB brotli
     gzip: false,
     ignore: ["@idvalidator/core"],
   },
@@ -43,7 +45,7 @@ module.exports = [
     name: "idvalidator-id - NIK only (tree-shaken)",
     path: "packages/id/dist/index.js",
     import: "{ nik }",
-    limit: "42 KB",  // baseline ~30 KB, +40% headroom
+    limit: "6.5 KB", // measured 4.83 KB brotli
     gzip: false,
     ignore: ["@idvalidator/core"],
   },
@@ -51,7 +53,7 @@ module.exports = [
     name: "idvalidator-id - NPWP only (tree-shaken)",
     path: "packages/id/dist/index.js",
     import: "{ npwp }",
-    limit: "13 KB",  // baseline ~8-9 KB, +40% headroom
+    limit: "7 KB", // measured 5.28 KB brotli
     gzip: false,
     ignore: ["@idvalidator/core"],
   },
@@ -59,7 +61,7 @@ module.exports = [
     name: "idvalidator-id - Postal Code only (tree-shaken)",
     path: "packages/id/dist/index.js",
     import: "{ postalCode }",
-    limit: "8 KB",   // baseline ~5-6 KB, +35% headroom
+    limit: "6 KB", // measured 4.32 KB brotli
     gzip: false,
     ignore: ["@idvalidator/core"],
   },
@@ -68,15 +70,17 @@ module.exports = [
   // Indonesia Address Data Package (@idvalidator/data-id-address)
   // ============================================================================
   {
-    name: "@idvalidator/data-id-address - Base (sync API, district-level)",
+    // CAVEAT: this entry is named for what it covers, not for what it measures.
+    // size-limit bundles the entry point and *follows dynamic import()*, so the
+    // lazy village chunk is included here even though the sync API never loads
+    // it. The base entry alone brotlis to ~82 KB; the standalone "Village data"
+    // budget below is what actually governs the dataset's growth.
+    name: "@idvalidator/data-id-address - Full (base + lazy village chunk)",
     path: "packages/data-id-address/dist/index.js",
-    limit: "55 KB",  // baseline ~30-35 KB, +40% headroom
+    limit: "700 KB", // measured 610 KB brotli
     gzip: false,
     ignore: ["@idvalidator/core"],
   },
-  // Note: Village data (~650 KB gzipped) is lazy-loaded via dynamic import()
-  // and only loaded when async functions are called. This check verifies the
-  // base bundle stays small.
 
   // ============================================================================
   // Global Validators
@@ -84,13 +88,13 @@ module.exports = [
   {
     name: "@idvalidator/global-email",
     path: "packages/global/email/dist/index.js",
-    limit: "5 KB",   // baseline ~3 KB gzip, +40% headroom
+    limit: "2 KB", // measured 648 B gzip
     gzip: true,
   },
   {
     name: "@idvalidator/global-phone - Full",
     path: "packages/global/phone/dist/index.js",
-    limit: "24 KB",  // baseline ~15-16 KB, +40% headroom
+    limit: "2 KB", // measured 951 B brotli
     gzip: false,
     ignore: ["@idvalidator/core"],
   },
@@ -101,31 +105,31 @@ module.exports = [
   {
     name: "Village data (lazy-loaded) - GZIP",
     path: "packages/data-id-address/data/village-postal-index.json",
-    limit: "900 KB", // baseline ~650 KB gzip, +38% headroom for data updates
+    limit: "750 KB", // measured 643 KB gzip (2.5 MB raw)
     gzip: true,
   },
   {
     name: "Admin hierarchy data",
     path: "packages/data-id-address/data/admin-hierarchy.json",
-    limit: "32 KB",  // baseline ~22-23 KB gzip, +40% headroom
+    limit: "75 KB", // measured 65.6 KB gzip (550 KB raw)
     gzip: true,
   },
   {
     name: "Postal index data",
     path: "packages/data-id-address/data/postal-index.json",
-    limit: "20 KB",  // baseline ~13-14 KB gzip, +40% headroom
+    limit: "58 KB", // measured 50.7 KB gzip (794 KB raw)
     gzip: true,
   },
   {
     name: "Indonesia regions data (embedded in idvalidator-id)",
     path: "packages/id/data/regions.json",
-    limit: "16 KB",  // baseline ~11-12 KB gzip, +35% headroom
+    limit: "6 KB", // measured 4.87 KB gzip
     gzip: true,
   },
   {
     name: "Phone calling codes data",
     path: "packages/global/phone/data/calling-codes.json",
-    limit: "13 KB",  // baseline ~8-9 KB gzip, +40% headroom
+    limit: "2 KB", // measured 547 B gzip
     gzip: true,
   },
 ];
