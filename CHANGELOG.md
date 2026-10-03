@@ -66,6 +66,12 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 
 
+- The CI bundle-size job could not run: it pinned Node 20, but `size-limit@14`
+  imports `glob` from `node:fs/promises` (Node 22+) and declares
+  `engines.node: ^22.19.0 || ^24.5.0 || >=26`. npm only warns on engine
+  mismatch, so the incompatible pair installed silently and failed at runtime.
+  That job now uses Node 22; the library's own support floor stays at Node 18
+  since this is the only place `size-limit` runs.
 - `npm run size` crashed on every invocation — `.size-limit.js` used
   `module.exports` in a `"type": "module"` package, so the CI bundle-size job
   could never have passed since that gate landed. The config is now ESM, every
