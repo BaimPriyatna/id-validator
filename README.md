@@ -138,6 +138,7 @@ flowchart TD
     PHONE["<b>@idvalidator/global-phone</b><br/>E.164 phone"]
     EMAIL["<b>@idvalidator/global-email</b><br/>structural email"]
     IBAN["<b>@idvalidator/global-iban</b><br/>IBAN · ISO 13616"]
+    CURRENCY["<b>@idvalidator/global-currency</b><br/>ISO 4217"]
     GLOBAL_MORE["<i>…</i>"]
 
     ID["<b>idvalidator-id</b>"]
@@ -156,6 +157,7 @@ flowchart TD
     GLOBAL --> PHONE
     GLOBAL --> EMAIL
     GLOBAL --> IBAN
+    GLOBAL --> CURRENCY
     GLOBAL --> GLOBAL_MORE
 
     COUNTRY --> ID
@@ -203,6 +205,7 @@ what each one does and does **not** check, is in
 | `@idvalidator/global-phone` | E.164 phone validation, reused by every country package |
 | `@idvalidator/global-email` | Structural email validation, reused by every country package |
 | `@idvalidator/global-iban` | IBAN structural validation (ISO 13616) with the ISO 7064 mod-97-10 checksum and SWIFT per-country lengths |
+| `@idvalidator/global-currency` | ISO 4217 currency codes, minor-unit precision, and major/minor unit conversion (no exchange rates) |
 | `@idvalidator/data-id-address` *(optional)* | Indonesia address reference data: province / regency / district, postal-code lookups in both directions, village (desa/kelurahan) data, and plate-region codes — see [Address data](#address-data) |
 
 ---
@@ -401,7 +404,8 @@ id-validator/
     ├── global/
     │   ├── phone/                # @idvalidator/global-phone
     │   ├── email/                # @idvalidator/global-email
-    │   └── iban/                 # @idvalidator/global-iban
+    │   ├── iban/                 # @idvalidator/global-iban
+    │   └── currency/             # @idvalidator/global-currency
     ├── id/                       # idvalidator-id
     └── data-id-address/          # @idvalidator/data-id-address (optional)
         ├── data/                 # admin hierarchy, postal index, plate codes, village index
@@ -456,12 +460,13 @@ id-validator/
 
 See [`CHANGELOG.md`](CHANGELOG.md) for full version history. Not yet
 started, per the original PRD: additional country packages
-(`id-validator-us`, `-my`, `-sg`, ...), further global modules (SWIFT/BIC,
-currency), and per-validator subpath exports for real tree-shaking (see
+(`id-validator-us`, `-my`, `-sg`, ...), further global modules (SWIFT/BIC),
+and per-validator subpath exports for real tree-shaking (see
 Known Limitations above).
 
 Implemented since that list was written: `@idvalidator/global-iban`
-(IBAN structural validation).
+(IBAN structural validation) and `@idvalidator/global-currency` (ISO 4217
+codes and minor-unit conversion).
 
 ---
 

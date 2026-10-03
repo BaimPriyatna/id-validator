@@ -1,0 +1,52 @@
+{
+  "name": "@idvalidator/global-currency",
+  "version": "1.0.0",
+  "description": "ISO 4217 currency reference data: code validation, minor-unit precision, and major/minor unit conversion",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "sideEffects": false,
+  "files": [
+    "dist",
+    "data"
+  ],
+  "dependencies": {
+    "@idvalidator/core": "1.0.2"
+  },
+  "scripts": {
+    "build": "tsup"
+  },
+  "devDependencies": {
+    "tsup": "^8.3.0"
+  },
+  "license": "MIT",
+  "author": "BaimPriyatna",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BaimPriyatna/id-validator.git",
+    "directory": "packages/global/currency"
+  },
+  "bugs": {
+    "url": "https://github.com/BaimPriyatna/id-validator/issues"
+  },
+  "homepage": "https://github.com/BaimPriyatna/id-validator#readme",
+  "keywords": [
+    "iso4217",
+    "currency",
+    "minor-units",
+    "money",
+    "validation",
+    "payout"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
+}

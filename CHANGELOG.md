@@ -6,6 +6,17 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- **`@idvalidator/global-currency`** (new package, 1.0.0) — ISO 4217 currency
+  reference data: code validation, registry lookups (by alpha or 3-digit
+  numeric code, as used in ISO 8583 DE49 / card data), minor-unit precision, and
+  `toMinorUnits()` / `fromMinorUnits()` conversion. 178 codes parsed directly
+  from the official SIX ISO 4217 List One XML (`Pblshd="2026-09-17"`), so
+  minor-unit exponents come from the Maintenance Agency rather than copied
+  around the web — including the 17 zero-decimal, 7 three-decimal and 2
+  four-decimal currencies, and the 13 codes the standard gives no minor unit at
+  all. `toMinorUnits()` throws on an amount carrying more precision than the
+  currency uses, rather than silently rounding. No exchange rates are bundled:
+  rates need a live or licensed source, and a stale copy is worse than none
 - `EXAMPLES.md` — Express middleware, Zod `.refine()` / `.superRefine()`, and
   React form integration snippets
 - GitHub issue templates (bug report, feature request) and PR template

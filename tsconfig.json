@@ -11,6 +11,9 @@
       "path": "./packages/global/iban"
     },
     {
+      "path": "./packages/global/currency"
+    },
+    {
       "path": "./packages/global/phone"
     },
     {

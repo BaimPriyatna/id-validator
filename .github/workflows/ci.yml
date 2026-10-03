@@ -22,7 +22,7 @@ jobs:
       - run: npm run lint
       - name: Typecheck each package
         run: |
-          for p in packages/core packages/global/phone packages/global/email packages/global/iban packages/id packages/data-id-address; do
+          for p in packages/core packages/global/phone packages/global/email packages/global/iban packages/global/currency packages/id packages/data-id-address; do
             (cd "$p" && npx tsc --noEmit -p tsconfig.json)
           done
       - run: npm test

@@ -110,6 +110,18 @@ export default [
     limit: "4.2 KB", // measured 3.49 KB gzip
     gzip: true,
   },
+  {
+    name: "@idvalidator/global-currency",
+    path: "packages/global/currency/dist/index.js",
+    limit: "8.5 KB", // measured 7.26 KB gzip
+    gzip: true,
+  },
+  {
+    name: "ISO 4217 currency list",
+    path: "packages/global/currency/data/iso4217.json",
+    limit: "7 KB", // measured 6.02 KB gzip
+    gzip: true,
+  },
 
   // ============================================================================
   // Large Data Files (tracked separately)
