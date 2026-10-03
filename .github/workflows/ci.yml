@@ -36,8 +36,13 @@ jobs:
           # size-limit@14 imports `glob` from node:fs/promises and declares
           # engines.node ^22.19.0 || ^24.5.0 || >=26, so it cannot run on the
           # Node 18/20 used elsewhere in this workflow. This job is the only
-          # place size-limit runs, so bumping it here is sufficient — the
+          # place size-limit runs, so bumping it here is sufficient -- the
           # published packages still support Node >= 18.
+          #
+          # Deliberately NOT using engine-strict: it would fail `npm ci` on the
+          # Node 18/20 matrix entries, which install size-limit without ever
+          # running it. The check below catches an unsupported runtime at the
+          # point of use instead, without breaking the other matrix entries.
           node-version: 22.x
           cache: npm
       - run: npm ci

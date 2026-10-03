@@ -21,7 +21,7 @@
     "typecheck": "tsc -b --noEmit",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "size": "size-limit",
+    "size": "node scripts/check-size-runtime.mjs && size-limit",
     "clean": "npm run clean --workspaces --if-present"
   },
   "engines": {

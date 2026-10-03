@@ -70,8 +70,14 @@ All notable changes to this project will be documented in this file.
   imports `glob` from `node:fs/promises` (Node 22+) and declares
   `engines.node: ^22.19.0 || ^24.5.0 || >=26`. npm only warns on engine
   mismatch, so the incompatible pair installed silently and failed at runtime.
-  That job now uses Node 22; the library's own support floor stays at Node 18
-  since this is the only place `size-limit` runs.
+  That job now uses Node 22, and `npm run size` starts with a capability
+  preflight (`scripts/check-size-runtime.mjs`) that reports a wrong-runtime
+  error in plain language instead of an opaque SyntaxError from inside
+  `size-limit`. The preflight tests for `fs/promises.glob` rather than parsing a
+  version string, so it survives Node renumbering the feature again. The library's
+  own support floor stays at Node 18 — this is the only place `size-limit` runs,
+  and `engine-strict` was rejected because it would fail `npm ci` on the Node
+  18/20 matrix entries that install `size-limit` without ever running it
 - `npm run size` crashed on every invocation — `.size-limit.js` used
   `module.exports` in a `"type": "module"` package, so the CI bundle-size job
   could never have passed since that gate landed. The config is now ESM, every
