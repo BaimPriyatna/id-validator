@@ -8,7 +8,7 @@
   <a href="https://github.com/BaimPriyatna/id-validator/actions/workflows/ci.yml"><img src="https://github.com/BaimPriyatna/id-validator/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-blue.svg" alt="License: Apache-2.0"></a>
   <a href="package.json"><img src="https://img.shields.io/badge/node-%3E%3D18-brightgreen.svg" alt="Node.js 18+"></a>
-  <a href="CHANGELOG.md"><img src="https://img.shields.io/badge/version-1.0.2-informational.svg" alt="Version"></a>
+  <a href="CHANGELOG.md"><img src="https://img.shields.io/badge/version-1.1.0-informational.svg" alt="Version"></a>
   <img src="https://img.shields.io/badge/TypeScript-ready-3178c6.svg" alt="TypeScript ready">
   <img src="https://img.shields.io/badge/third--party%20deps-0-success.svg" alt="No third-party runtime dependencies">
 </p>

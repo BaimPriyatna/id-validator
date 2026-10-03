@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.0] - 2026-10-03
+
+Released together with the two new global packages and the `confidence` field.
+Version notes:
+
+- **`@idvalidator/core`, `global-phone`, `global-email`, `idvalidator-id` →
+  1.1.0** (minor). Core gained the public `confidence` field; the others are
+  minor bumps only to keep their `.d.ts` aligned with the core they pin. All
+  four pin `@idvalidator/core` as an *exact* version, so they must move in
+  lockstep or a dependent would resolve against a core whose types lack
+  `confidence`.
+- **`@idvalidator/global-iban` → 1.0.0** (new, never previously published).
+- **`@idvalidator/global-currency` → 1.0.0** (new, never previously published).
+- **`@idvalidator/data-id-address` → 1.1.0**. Note this was already unpublished
+  at this version: npm shows 1.0.2 as the only released version, so 1.1.0 was
+  free.
+
+### Upgrade note
+
+No breaking changes. Existing code keeps working unchanged. The only visible
+difference is that `validate()` results now carry an extra `confidence` field —
+relevant only if you snapshot or serialize validation results.
+
 ## [Unreleased]
 
 ### Added

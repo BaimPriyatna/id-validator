@@ -20,7 +20,7 @@
       "NOTICE"
     ],
   "dependencies": {
-    "@idvalidator/core": "1.0.2"
+    "@idvalidator/core": "1.1.0"
   },
   "scripts": {
     "build": "tsup"
