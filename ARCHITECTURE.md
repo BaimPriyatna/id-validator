@@ -226,8 +226,9 @@ Do NOT use this pattern when:
 ```
 packages/data-id-address/
 ├── data/
-│   ├── admin-hierarchy.json        (bundled, ~30 KB — always needed)
-│   └── village-postal-index.json   (lazy, ~650 KB — optional)
+│   ├── admin-hierarchy.json        (bundled, 68 KB gzip — always needed)
+│   ├── postal-index.json           (bundled, 60 KB gzip — always needed)
+│   └── village-postal-index.json   (lazy, 643 KB gzip — optional)
 └── src/
     ├── index.ts                     (sync API, imports admin-hierarchy)
     └── village.ts                   (async API, dynamic import of village data)

@@ -185,7 +185,7 @@ jobs:
 
           - [ ] Run full test suite: \`npm test\`
           - [ ] Run type checking: \`npm run typecheck\`
-          - [ ] Check bundle sizes: \`npm run size\` (after size-limit is configured)
+          - [ ] Check bundle sizes: \`npm run build && npm run size\` (needs a fresh build — \`npm run size\` reads \`dist/\`)
           - [ ] Update \`CHANGELOG.md\` with data source version changes
           - [ ] Update version metadata in affected package.json files
           - [ ] Update \`REFERENCE.md\` if data structure or coverage changed
