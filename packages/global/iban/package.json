@@ -1,0 +1,52 @@
+{
+  "name": "@idvalidator/global-iban",
+  "version": "1.0.0",
+  "description": "IBAN (ISO 13616) structural validation: country code, per-country length, and ISO 7064 mod-97-10 checksum",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "sideEffects": false,
+  "files": [
+    "dist",
+    "data"
+  ],
+  "dependencies": {
+    "@idvalidator/core": "1.0.2"
+  },
+  "scripts": {
+    "build": "tsup"
+  },
+  "devDependencies": {
+    "tsup": "^8.3.0"
+  },
+  "license": "MIT",
+  "author": "BaimPriyatna",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BaimPriyatna/id-validator.git",
+    "directory": "packages/global/iban"
+  },
+  "bugs": {
+    "url": "https://github.com/BaimPriyatna/id-validator/issues"
+  },
+  "homepage": "https://github.com/BaimPriyatna/id-validator#readme",
+  "keywords": [
+    "iban",
+    "iso13616",
+    "iso7064",
+    "banking",
+    "validation",
+    "mod97"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
+}

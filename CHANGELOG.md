@@ -20,6 +20,15 @@ All notable changes to this project will be documented in this file.
   straight to region names), `searchPostalCodesByName(query, { level, output })` (region name
   -> postal code(s), the reverse), and `searchPlateCodesByArea(query)`
   (area name -> plate region code(s), the reverse of `lookupPlateRegion`)
+- **`@idvalidator/global-iban`** (new package, 1.0.0) — IBAN structural
+  validation per ISO 13616 with the ISO 7064 mod-97-10 checksum and per-country
+  lengths from the SWIFT IBAN Registry (89 official + 22 experimental countries).
+  `validate()` (never throws, returns the canonical unspaced/uppercase value),
+  `isValid()`, `parse()`, `normalize()`, `format()`, `formatDisplay()`,
+  `listCountries()`, `countryInfo()`, plus `options.rejectPartialCountries` for
+  consumers that must not accept the registry's experimental entries. Models
+  structure only — BBAN field positions and national domestic checksums are
+  deliberately out of scope, and the package never claims an account exists
 - `@idvalidator/data-id-address`: village-level (desa/kelurahan) support —
   `listVillagesInDistrict`, `searchVillagesByName`, `resolvePostalCodeVillages`
   (all async, lazy-load a separate ~2.5MB/~650KB gzip dataset only when
@@ -31,7 +40,13 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
-- `scripts/throughput.mjs` broke `npm run lint` (ESLint typed-linting
+- `npm run size` crashed on every invocation — `.size-limit.js` used
+  `module.exports` in a `"type": "module"` package, so the CI bundle-size job
+  could never have passed since that gate landed. The config is now ESM, every
+  budget was reset to the size size-limit actually reports (several had been
+  set at roughly half their real size, so the gate would have failed on a clean
+  tree), and the data-update checklist now builds before checking sizes
+- `scripts/throughput.mjs` broke `npm run lint`
   couldn't find it in any tsconfig project) — excluded `scripts/**` from
   linting, same as other non-project config files
 

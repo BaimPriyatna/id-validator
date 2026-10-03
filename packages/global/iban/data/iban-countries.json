@@ -1,0 +1,789 @@
+{
+  "meta": {
+    "source": "IBAN structure table, https://www.iban.com/structure (compiled from the SWIFT IBAN Registry / ISO 13616). Data updated on that page: 8 May 2026.",
+    "note": "Structural lengths only. BBAN field positions (bank identifier, branch) are NOT modeled, so validate() checks country code + length + mod-97 checksum and cannot claim a specific bank/account layout is correct. Entries in \"partialCountries\" are experimental per the source and may change or be withdrawn; they are accepted by validate() but callers who need strictness should use strictMode. Every length here was cross-checked against that country's example IBAN on the same page.",
+    "updatedAt": "2026-10-03",
+    "version": "2026.05"
+  },
+  "countries": [
+    {
+      "code": "AL",
+      "name": "Albania",
+      "length": 28,
+      "sepa": true,
+      "example": "AL35202111090000000001234567"
+    },
+    {
+      "code": "AD",
+      "name": "Andorra",
+      "length": 24,
+      "sepa": true,
+      "example": "AD1400080001001234567890"
+    },
+    {
+      "code": "AT",
+      "name": "Austria",
+      "length": 20,
+      "sepa": true,
+      "example": "AT483200000012345864"
+    },
+    {
+      "code": "AZ",
+      "name": "Azerbaijan",
+      "length": 28,
+      "sepa": false,
+      "example": "AZ77VTBA00000000001234567890"
+    },
+    {
+      "code": "BH",
+      "name": "Bahrain",
+      "length": 22,
+      "sepa": false,
+      "example": "BH02CITI00001077181611"
+    },
+    {
+      "code": "BE",
+      "name": "Belgium",
+      "length": 16,
+      "sepa": true,
+      "example": "BE71096123456769"
+    },
+    {
+      "code": "BA",
+      "name": "Bosnia and Herzegovina",
+      "length": 20,
+      "sepa": false,
+      "example": "BA393385804800211234"
+    },
+    {
+      "code": "BR",
+      "name": "Brazil",
+      "length": 29,
+      "sepa": false,
+      "example": "BR1500000000000010932840814P2"
+    },
+    {
+      "code": "BG",
+      "name": "Bulgaria",
+      "length": 22,
+      "sepa": true,
+      "example": "BG19STSA93000123456789"
+    },
+    {
+      "code": "CR",
+      "name": "Costa Rica",
+      "length": 22,
+      "sepa": false,
+      "example": "CR23015108410026012345"
+    },
+    {
+      "code": "HR",
+      "name": "Croatia",
+      "length": 21,
+      "sepa": true,
+      "example": "HR1723600001101234565"
+    },
+    {
+      "code": "CY",
+      "name": "Cyprus",
+      "length": 28,
+      "sepa": true,
+      "example": "CY21002001950000357001234567"
+    },
+    {
+      "code": "CZ",
+      "name": "Czech Republic",
+      "length": 24,
+      "sepa": true,
+      "example": "CZ5508000000001234567899"
+    },
+    {
+      "code": "FO",
+      "name": "Faroe Islands",
+      "length": 18,
+      "sepa": false,
+      "example": "FO0664600004330406"
+    },
+    {
+      "code": "GL",
+      "name": "Greenland",
+      "length": 18,
+      "sepa": false,
+      "example": "GL9264710002171039"
+    },
+    {
+      "code": "DK",
+      "name": "Denmark",
+      "length": 18,
+      "sepa": true,
+      "example": "DK9520000123456789"
+    },
+    {
+      "code": "DO",
+      "name": "Dominican Republic",
+      "length": 28,
+      "sepa": false,
+      "example": "DO22ACAU00000000000123456789"
+    },
+    {
+      "code": "EE",
+      "name": "Estonia",
+      "length": 20,
+      "sepa": true,
+      "example": "EE471000001020145685"
+    },
+    {
+      "code": "EG",
+      "name": "Egypt",
+      "length": 29,
+      "sepa": false,
+      "example": "EG800002000156789012345180002"
+    },
+    {
+      "code": "FI",
+      "name": "Finland",
+      "length": 18,
+      "sepa": true,
+      "example": "FI1410093000123458"
+    },
+    {
+      "code": "FR",
+      "name": "France",
+      "length": 27,
+      "sepa": true,
+      "example": "FR7630006000011234567890189"
+    },
+    {
+      "code": "GE",
+      "name": "Georgia",
+      "length": 22,
+      "sepa": false,
+      "example": "GE60NB0000000123456789"
+    },
+    {
+      "code": "DE",
+      "name": "Germany",
+      "length": 22,
+      "sepa": true,
+      "example": "DE75512108001245126199"
+    },
+    {
+      "code": "GI",
+      "name": "Gibraltar",
+      "length": 23,
+      "sepa": true,
+      "example": "GI56XAPO000001234567890"
+    },
+    {
+      "code": "GR",
+      "name": "Greece",
+      "length": 27,
+      "sepa": true,
+      "example": "GR9608100010000001234567890"
+    },
+    {
+      "code": "GT",
+      "name": "Guatemala",
+      "length": 28,
+      "sepa": false,
+      "example": "GT20AGRO00000000001234567890"
+    },
+    {
+      "code": "HU",
+      "name": "Hungary",
+      "length": 28,
+      "sepa": true,
+      "example": "HU93116000060000000012345676"
+    },
+    {
+      "code": "IS",
+      "name": "Iceland",
+      "length": 26,
+      "sepa": true,
+      "example": "IS750001121234563108962099"
+    },
+    {
+      "code": "IE",
+      "name": "Ireland",
+      "length": 22,
+      "sepa": true,
+      "example": "IE06BOFI90008412345671"
+    },
+    {
+      "code": "IL",
+      "name": "Israel",
+      "length": 23,
+      "sepa": false,
+      "example": "IL170108000000012612345"
+    },
+    {
+      "code": "IT",
+      "name": "Italy",
+      "length": 27,
+      "sepa": true,
+      "example": "IT60X0542811101000000123456"
+    },
+    {
+      "code": "JO",
+      "name": "Jordan",
+      "length": 30,
+      "sepa": false,
+      "example": "JO71CBJO0000000000001234567890"
+    },
+    {
+      "code": "KZ",
+      "name": "Kazakhstan",
+      "length": 20,
+      "sepa": false,
+      "example": "KZ244350000012344567"
+    },
+    {
+      "code": "XK",
+      "name": "Kosovo",
+      "length": 20,
+      "sepa": false,
+      "example": "XK051212012345678906"
+    },
+    {
+      "code": "KW",
+      "name": "Kuwait",
+      "length": 30,
+      "sepa": false,
+      "example": "KW81CBKU0000000000001234560101"
+    },
+    {
+      "code": "LV",
+      "name": "Latvia",
+      "length": 21,
+      "sepa": true,
+      "example": "LV97HABA0012345678910"
+    },
+    {
+      "code": "LB",
+      "name": "Lebanon",
+      "length": 28,
+      "sepa": false,
+      "example": "LB92000700000000123123456123"
+    },
+    {
+      "code": "LI",
+      "name": "Liechtenstein",
+      "length": 21,
+      "sepa": true,
+      "example": "LI7408806123456789012"
+    },
+    {
+      "code": "LT",
+      "name": "Lithuania",
+      "length": 20,
+      "sepa": true,
+      "example": "LT601010012345678901"
+    },
+    {
+      "code": "LU",
+      "name": "Luxembourg",
+      "length": 20,
+      "sepa": true,
+      "example": "LU120010001234567891"
+    },
+    {
+      "code": "MK",
+      "name": "North Macedonia",
+      "length": 19,
+      "sepa": true,
+      "example": "MK07200002785123453"
+    },
+    {
+      "code": "MT",
+      "name": "Malta",
+      "length": 31,
+      "sepa": true,
+      "example": "MT31MALT01100000000000000000123"
+    },
+    {
+      "code": "MR",
+      "name": "Mauritania",
+      "length": 27,
+      "sepa": false,
+      "example": "MR1300020001010000123456753"
+    },
+    {
+      "code": "MU",
+      "name": "Mauritius",
+      "length": 30,
+      "sepa": false,
+      "example": "MU43BOMM0101123456789101000MUR"
+    },
+    {
+      "code": "MD",
+      "name": "Moldova",
+      "length": 24,
+      "sepa": true,
+      "example": "MD21EX000000000001234567"
+    },
+    {
+      "code": "MC",
+      "name": "Monaco",
+      "length": 27,
+      "sepa": true,
+      "example": "MC5810096180790123456789085"
+    },
+    {
+      "code": "ME",
+      "name": "Montenegro",
+      "length": 22,
+      "sepa": true,
+      "example": "ME25510000012345678920"
+    },
+    {
+      "code": "NL",
+      "name": "Netherlands",
+      "length": 18,
+      "sepa": true,
+      "example": "NL02ABNA0123456789"
+    },
+    {
+      "code": "NO",
+      "name": "Norway",
+      "length": 15,
+      "sepa": true,
+      "example": "NO8330001234567"
+    },
+    {
+      "code": "PK",
+      "name": "Pakistan",
+      "length": 24,
+      "sepa": false,
+      "example": "PK36SCBL0000001123456702"
+    },
+    {
+      "code": "PS",
+      "name": "Palestine",
+      "length": 29,
+      "sepa": false,
+      "example": "PS92PALS000000000400123456702"
+    },
+    {
+      "code": "PL",
+      "name": "Poland",
+      "length": 28,
+      "sepa": true,
+      "example": "PL10105000997603123456789123"
+    },
+    {
+      "code": "PT",
+      "name": "Portugal",
+      "length": 25,
+      "sepa": true,
+      "example": "PT50003310311234567890197"
+    },
+    {
+      "code": "QA",
+      "name": "Qatar",
+      "length": 29,
+      "sepa": false,
+      "example": "QA54QNBA000000000000693123456"
+    },
+    {
+      "code": "RO",
+      "name": "Romania",
+      "length": 24,
+      "sepa": true,
+      "example": "RO66BACX0000001234567890"
+    },
+    {
+      "code": "SM",
+      "name": "San Marino",
+      "length": 27,
+      "sepa": true,
+      "example": "SM76P0854009812123456789123"
+    },
+    {
+      "code": "LC",
+      "name": "Saint Lucia",
+      "length": 32,
+      "sepa": false,
+      "example": "LC14BOSL123456789012345678901234"
+    },
+    {
+      "code": "ST",
+      "name": "Sao Tome and Principe",
+      "length": 25,
+      "sepa": false,
+      "example": "ST23000200000289355710148"
+    },
+    {
+      "code": "SA",
+      "name": "Saudi Arabia",
+      "length": 24,
+      "sepa": false,
+      "example": "SA4420000001234567891234"
+    },
+    {
+      "code": "RS",
+      "name": "Serbia",
+      "length": 22,
+      "sepa": true,
+      "example": "RS35105008123123123173"
+    },
+    {
+      "code": "SK",
+      "name": "Slovakia",
+      "length": 24,
+      "sepa": true,
+      "example": "SK8975000000000012345671"
+    },
+    {
+      "code": "SI",
+      "name": "Slovenia",
+      "length": 19,
+      "sepa": true,
+      "example": "SI56192001234567892"
+    },
+    {
+      "code": "ES",
+      "name": "Spain",
+      "length": 24,
+      "sepa": true,
+      "example": "ES7921000813610123456789"
+    },
+    {
+      "code": "SE",
+      "name": "Sweden",
+      "length": 24,
+      "sepa": true,
+      "example": "SE7280000810340009783242"
+    },
+    {
+      "code": "CH",
+      "name": "Switzerland",
+      "length": 21,
+      "sepa": true,
+      "example": "CH5604835012345678009"
+    },
+    {
+      "code": "TL",
+      "name": "Timor-Leste",
+      "length": 23,
+      "sepa": false,
+      "example": "TL380010012345678910106"
+    },
+    {
+      "code": "TN",
+      "name": "Tunisia",
+      "length": 24,
+      "sepa": false,
+      "example": "TN5904018104004942712345"
+    },
+    {
+      "code": "TR",
+      "name": "Turkey",
+      "length": 26,
+      "sepa": false,
+      "example": "TR190006200009112345678901"
+    },
+    {
+      "code": "AE",
+      "name": "United Arab Emirates",
+      "length": 23,
+      "sepa": false,
+      "example": "AE460090000000123456789"
+    },
+    {
+      "code": "GB",
+      "name": "United Kingdom",
+      "length": 22,
+      "sepa": true,
+      "example": "GB33BUKB20201555555555"
+    },
+    {
+      "code": "VA",
+      "name": "State of Vatican City / Holy See (the)",
+      "length": 22,
+      "sepa": true,
+      "example": "VA59001123000012345678"
+    },
+    {
+      "code": "VG",
+      "name": "Virgin Islands, British",
+      "length": 24,
+      "sepa": false,
+      "example": "VG07ABVI0000000123456789"
+    },
+    {
+      "code": "UA",
+      "name": "Ukraine",
+      "length": 29,
+      "sepa": false,
+      "example": "UA903052992990004149123456789"
+    },
+    {
+      "code": "SC",
+      "name": "Seychelles",
+      "length": 31,
+      "sepa": false,
+      "example": "SC74MCBL01031234567890123456USD"
+    },
+    {
+      "code": "IQ",
+      "name": "Iraq",
+      "length": 23,
+      "sepa": false,
+      "example": "IQ20CBIQ861800101010500"
+    },
+    {
+      "code": "BY",
+      "name": "Belarus",
+      "length": 28,
+      "sepa": false,
+      "example": "BY86AKBB10100000002966000000"
+    },
+    {
+      "code": "SV",
+      "name": "El Salvador",
+      "length": 28,
+      "sepa": false,
+      "example": "SV43ACAT00000000000000123123"
+    },
+    {
+      "code": "LY",
+      "name": "Libya",
+      "length": 25,
+      "sepa": false,
+      "example": "LY38021001000000123456789"
+    },
+    {
+      "code": "SD",
+      "name": "Sudan",
+      "length": 18,
+      "sepa": false,
+      "example": "SD8811123456789012"
+    },
+    {
+      "code": "BI",
+      "name": "Burundi",
+      "length": 27,
+      "sepa": false,
+      "example": "BI1320001100010000123456789"
+    },
+    {
+      "code": "DJ",
+      "name": "Djibouti",
+      "length": 27,
+      "sepa": false,
+      "example": "DJ2110002010010409943020008"
+    },
+    {
+      "code": "RU",
+      "name": "Russia",
+      "length": 33,
+      "sepa": false,
+      "example": "RU0204452560040702810412345678901"
+    },
+    {
+      "code": "SO",
+      "name": "Somalia",
+      "length": 23,
+      "sepa": false,
+      "example": "SO061000001123123456789"
+    },
+    {
+      "code": "NI",
+      "name": "Nicaragua",
+      "length": 28,
+      "sepa": false,
+      "example": "NI79BAMC00000000000003123123"
+    },
+    {
+      "code": "MN",
+      "name": "Mongolia",
+      "length": 20,
+      "sepa": false,
+      "example": "MN580050099123456789"
+    },
+    {
+      "code": "FK",
+      "name": "Falkland Islands",
+      "length": 18,
+      "sepa": false,
+      "example": "FK12SC987654321098"
+    },
+    {
+      "code": "OM",
+      "name": "Sultanate of Oman",
+      "length": 23,
+      "sepa": false,
+      "example": "OM040280000012345678901"
+    },
+    {
+      "code": "YE",
+      "name": "Yemen",
+      "length": 30,
+      "sepa": false,
+      "example": "YE20ALMF0000000000001234560101"
+    },
+    {
+      "code": "HN",
+      "name": "Honduras",
+      "length": 28,
+      "sepa": false,
+      "example": "HN54PISA00000000000000123124"
+    }
+  ],
+  "partialCountries": [
+    {
+      "code": "AO",
+      "name": "Angola",
+      "length": 25,
+      "sepa": false,
+      "example": "AO06004400006729503010102"
+    },
+    {
+      "code": "BF",
+      "name": "Burkina Faso",
+      "length": 28,
+      "sepa": false,
+      "example": "BF42BF0840101300463574000390"
+    },
+    {
+      "code": "BJ",
+      "name": "Benin",
+      "length": 28,
+      "sepa": false,
+      "example": "BJ66BJ0610100100144390000769"
+    },
+    {
+      "code": "CF",
+      "name": "Central African Republic",
+      "length": 27,
+      "sepa": false,
+      "example": "CF4220001000010120069700160"
+    },
+    {
+      "code": "CG",
+      "name": "Congo",
+      "length": 27,
+      "sepa": false,
+      "example": "CG3930011000101013451300019"
+    },
+    {
+      "code": "CI",
+      "name": "Ivory Coast",
+      "length": 28,
+      "sepa": false,
+      "example": "CI93CI0080111301134291200589"
+    },
+    {
+      "code": "CM",
+      "name": "Cameroon",
+      "length": 27,
+      "sepa": false,
+      "example": "CM2110002000300277976315008"
+    },
+    {
+      "code": "CV",
+      "name": "Cape Verde",
+      "length": 25,
+      "sepa": false,
+      "example": "CV64000500000020108215144"
+    },
+    {
+      "code": "DZ",
+      "name": "Algeria",
+      "length": 24,
+      "sepa": false,
+      "example": "DZ1400100725020000018457"
+    },
+    {
+      "code": "GA",
+      "name": "Gabon",
+      "length": 27,
+      "sepa": false,
+      "example": "GA2140021010032001890020126"
+    },
+    {
+      "code": "GQ",
+      "name": "Equatorial Guinea",
+      "length": 27,
+      "sepa": false,
+      "example": "GQ7050002001003715228190196"
+    },
+    {
+      "code": "GW",
+      "name": "Guinea-Bissau",
+      "length": 25,
+      "sepa": false,
+      "example": "GW04GW1430010181800637601"
+    },
+    {
+      "code": "IR",
+      "name": "Iran",
+      "length": 26,
+      "sepa": false,
+      "example": "IR710570029971601460641001"
+    },
+    {
+      "code": "MA",
+      "name": "Morocco",
+      "length": 28,
+      "sepa": false,
+      "example": "MA64011519000001205000534921"
+    },
+    {
+      "code": "MG",
+      "name": "Madagascar",
+      "length": 27,
+      "sepa": false,
+      "example": "MG4600005030071289421016045"
+    },
+    {
+      "code": "ML",
+      "name": "Mali",
+      "length": 28,
+      "sepa": false,
+      "example": "ML13ML0160120102600100668497"
+    },
+    {
+      "code": "MZ",
+      "name": "Mozambique",
+      "length": 25,
+      "sepa": false,
+      "example": "MZ59000301080016367102371"
+    },
+    {
+      "code": "NE",
+      "name": "Niger",
+      "length": 28,
+      "sepa": false,
+      "example": "NE58NE0380100100130305000268"
+    },
+    {
+      "code": "SN",
+      "name": "Senegal",
+      "length": 28,
+      "sepa": false,
+      "example": "SN08SN0100152000048500003035"
+    },
+    {
+      "code": "TD",
+      "name": "Chad",
+      "length": 27,
+      "sepa": false,
+      "example": "TD8960002000010271091600153"
+    },
+    {
+      "code": "TG",
+      "name": "Togo",
+      "length": 28,
+      "sepa": false,
+      "example": "TG53TG0090604310346500400070"
+    },
+    {
+      "code": "KM",
+      "name": "Comoros",
+      "length": 27,
+      "sepa": false,
+      "example": "KM4600005000010010904400137"
+    }
+  ]
+}

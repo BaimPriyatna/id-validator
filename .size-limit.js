@@ -98,6 +98,18 @@ export default [
     gzip: false,
     ignore: ["@idvalidator/core"],
   },
+  {
+    name: "@idvalidator/global-iban",
+    path: "packages/global/iban/dist/index.js",
+    limit: "6 KB", // measured 4.86 KB gzip
+    gzip: true,
+  },
+  {
+    name: "IBAN country registry data",
+    path: "packages/global/iban/data/iban-countries.json",
+    limit: "4.2 KB", // measured 3.49 KB gzip
+    gzip: true,
+  },
 
   // ============================================================================
   // Large Data Files (tracked separately)
