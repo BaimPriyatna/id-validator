@@ -65,4 +65,4 @@ if (phone.isValid("+6281234567890")) {
 
 ## License
 
-MIT © [BaimPriyatna](https://github.com/BaimPriyatna)
+Apache-2.0 © [BaimPriyatna](https://github.com/BaimPriyatna)

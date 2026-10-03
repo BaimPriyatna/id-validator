@@ -65,4 +65,4 @@ if (email.isValid("user@domain.com")) {
 
 ## License
 
-MIT © [BaimPriyatna](https://github.com/BaimPriyatna)
+Apache-2.0 © [BaimPriyatna](https://github.com/BaimPriyatna)

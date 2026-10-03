@@ -91,4 +91,4 @@ if (typeof safe !== "string") {
 
 ## License
 
-MIT © [BaimPriyatna](https://github.com/BaimPriyatna)
+Apache-2.0 © [BaimPriyatna](https://github.com/BaimPriyatna)

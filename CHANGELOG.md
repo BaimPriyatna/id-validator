@@ -49,7 +49,22 @@ All notable changes to this project will be documented in this file.
   one district at any granularity) — see the package README before
   assuming otherwise
 
+### Changed
+
+- License switched from MIT to **Apache-2.0** across the monorepo. Commit
+  `e6d8b21` replaced the `LICENSE` file but left every `package.json` still
+  declaring `"license": "MIT"`, so the repository had an Apache LICENSE next to
+  MIT package metadata — npm would have shown an MIT badge on every package page
+  and misrepresented the terms to consumers. All 8 `package.json` files (root +
+  7 packages) now declare `Apache-2.0`, and the README license badge is updated.
+- Added `NOTICE` (root + a copy in each package, added to each package's `files`
+  so it ships in the tarball). Apache-2.0 requires redistributing attribution
+  notices, which MIT did not. The NOTICE enumerates the third-party datasets
+  the packages bundle and the license each one stays under — the Indonesian
+  region/postal data is MIT-licensed by its upstream authors and remains so.
+
 ### Fixed
+
 
 - `npm run size` crashed on every invocation — `.size-limit.js` used
   `module.exports` in a `"type": "module"` package, so the CI bundle-size job
@@ -78,7 +93,22 @@ All notable changes to this project will be documented in this file.
   that a fully-unpublished package name cannot be republished for 28
   days. Renaming sidesteps the wait entirely.
 
+### Changed
+
+- License switched from MIT to **Apache-2.0** across the monorepo. Commit
+  `e6d8b21` replaced the `LICENSE` file but left every `package.json` still
+  declaring `"license": "MIT"`, so the repository had an Apache LICENSE next to
+  MIT package metadata — npm would have shown an MIT badge on every package page
+  and misrepresented the terms to consumers. All 8 `package.json` files (root +
+  7 packages) now declare `Apache-2.0`, and the README license badge is updated.
+- Added `NOTICE` (root + a copy in each package, added to each package's `files`
+  so it ships in the tarball). Apache-2.0 requires redistributing attribution
+  notices, which MIT did not. The NOTICE enumerates the third-party datasets
+  the packages bundle and the license each one stays under — the Indonesian
+  region/postal data is MIT-licensed by its upstream authors and remains so.
+
 ### Fixed
+
 
 - `.github/workflows/release.yml`: the `idvalidator-id` (formerly
   `id-validator-id`) publish step was missing `--access public`. This
@@ -99,7 +129,22 @@ All notable changes to this project will be documented in this file.
   deleted and re-registration was blocked by npm's name-reuse hold, with
   no published timeline for release.
 
+### Changed
+
+- License switched from MIT to **Apache-2.0** across the monorepo. Commit
+  `e6d8b21` replaced the `LICENSE` file but left every `package.json` still
+  declaring `"license": "MIT"`, so the repository had an Apache LICENSE next to
+  MIT package metadata — npm would have shown an MIT badge on every package page
+  and misrepresented the terms to consumers. All 8 `package.json` files (root +
+  7 packages) now declare `Apache-2.0`, and the README license badge is updated.
+- Added `NOTICE` (root + a copy in each package, added to each package's `files`
+  so it ships in the tarball). Apache-2.0 requires redistributing attribution
+  notices, which MIT did not. The NOTICE enumerates the third-party datasets
+  the packages bundle and the license each one stays under — the Indonesian
+  region/postal data is MIT-licensed by its upstream authors and remains so.
+
 ### Fixed
+
 
 - `idvalidator-id`'s `phone.validate()` could throw a raw `TypeError` on
   non-string input (number, boolean, object, array) instead of returning a

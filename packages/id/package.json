@@ -15,9 +15,10 @@
   },
   "sideEffects": false,
   "files": [
-    "dist",
-    "data"
-  ],
+      "dist",
+      "data",
+      "NOTICE"
+    ],
   "dependencies": {
     "@idvalidator/core": "1.0.2",
     "@idvalidator/global-phone": "1.0.2",
@@ -29,7 +30,7 @@
   "devDependencies": {
     "tsup": "^8.3.0"
   },
-  "license": "MIT",
+  "license": "Apache-2.0",
   "author": "BaimPriyatna",
   "repository": {
     "type": "git",

@@ -38,7 +38,7 @@
     "vitest": "^2.1.0"
   },
   "version": "1.0.2",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "author": "BaimPriyatna",
   "repository": {
     "type": "git",

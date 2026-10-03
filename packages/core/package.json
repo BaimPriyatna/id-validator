@@ -15,7 +15,8 @@
   },
   "sideEffects": false,
   "files": [
-    "dist"
+      "dist",
+      "NOTICE"
   ],
   "dependencies": {},
   "scripts": {
@@ -24,7 +25,7 @@
   "devDependencies": {
     "tsup": "^8.3.0"
   },
-  "license": "MIT",
+  "license": "Apache-2.0",
   "author": "BaimPriyatna",
   "repository": {
     "type": "git",

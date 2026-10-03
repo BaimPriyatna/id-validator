@@ -99,7 +99,7 @@ decision; the source and version live in the file's `meta` block.
 
 ## License
 
-MIT — see [LICENSE](../../LICENSE).
+Apache-2.0 — see [LICENSE](../../LICENSE).
 
 Registry facts are used from SWIFT/iban.com; see that page's terms on reuse and
 attribution.

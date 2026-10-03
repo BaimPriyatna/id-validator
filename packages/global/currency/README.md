@@ -110,6 +110,6 @@ a compliance decision; the publication date is in `meta.version`.
 
 ## License
 
-MIT — see [LICENSE](../../LICENSE). ISO 4217 data is published by SIX Financial
+Apache-2.0 — see [LICENSE](../../LICENSE). ISO 4217 data is published by SIX Financial
 Information; ISO permits free use of the country, currency and language code
 standards.
