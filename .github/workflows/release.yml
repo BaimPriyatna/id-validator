@@ -24,7 +24,7 @@ jobs:
       - run: npm test
       - name: Typecheck each package
         run: |
-          for p in packages/core packages/global/phone packages/global/email packages/id packages/data-id-address; do
+          for p in packages/core packages/global/phone packages/global/email packages/global/iban packages/global/currency packages/id packages/data-id-address; do
             (cd "$p" && npx tsc --noEmit -p tsconfig.json)
           done
       # Publish in dependency order so a package never publishes before the
@@ -40,6 +40,8 @@ jobs:
         run: |
           npm publish --workspace packages/global/phone --access public --provenance
           npm publish --workspace packages/global/email --access public --provenance
+          npm publish --workspace packages/global/iban --access public --provenance
+          npm publish --workspace packages/global/currency --access public --provenance
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Publish idvalidator-id
