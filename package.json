@@ -22,6 +22,8 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "size": "node scripts/check-size-runtime.mjs && size-limit",
+    "release:check": "node scripts/publish-changed.mjs",
+    "release:dry-run": "node scripts/publish-changed.mjs --dry-run",
     "clean": "npm run clean --workspaces --if-present"
   },
   "engines": {

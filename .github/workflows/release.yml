@@ -27,28 +27,21 @@ jobs:
           for p in packages/core packages/global/phone packages/global/email packages/global/iban packages/global/currency packages/id packages/data-id-address; do
             (cd "$p" && npx tsc --noEmit -p tsconfig.json)
           done
-      # Publish in dependency order so a package never publishes before the
-      # workspace dep it requires is already on the registry. --provenance
-      # uses the id-token permission above to attach a signed attestation
-      # (visible as a "Provenance" badge on the npm package page) linking
-      # each published tarball back to this exact workflow run and commit.
-      - name: Publish @idvalidator/core
-        run: npm publish --workspace packages/core --access public --provenance
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - name: Publish global modules
-        run: |
-          npm publish --workspace packages/global/phone --access public --provenance
-          npm publish --workspace packages/global/email --access public --provenance
-          npm publish --workspace packages/global/iban --access public --provenance
-          npm publish --workspace packages/global/currency --access public --provenance
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - name: Publish idvalidator-id
-        run: npm publish --workspace packages/id --access public --provenance
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - name: Publish optional data package
-        run: npm publish --workspace packages/data-id-address --access public --provenance
+      # Report what the tag maps to before publishing. A tag pushed from a
+      # commit whose versions were not bumped publishes nothing (see below);
+      # this keeps that visible in the log instead of a bare "0 published".
+      - name: Show version vs registry
+        run: node scripts/publish-changed.mjs --dry-run
+      # Publish only the packages whose version is ahead of what is already on
+      # the registry, in dependency order. Publishing every package
+      # unconditionally breaks as soon as one version is not bumped: npm
+      # publish fails with EPUBLISHCONFLICT, the step exits non-zero, and
+      # every package listed after it is silently never published. A tag whose
+      # versions are all already live is a no-op rather than a red build.
+      #
+      # --provenance uses the id-token permission above to attach a signed
+      # attestation linking each tarball back to this exact workflow run.
+      - name: Publish changed packages
+        run: node scripts/publish-changed.mjs
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

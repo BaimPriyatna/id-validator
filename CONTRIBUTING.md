@@ -132,9 +132,10 @@ CI will fail if bundle size exceeds configured limits.
 
 ### Cutting a release
 
-1. Bump `version` in every `package.json` under `packages/` (and the internal
-   `dependencies` versions in `packages/id/package.json` and the two
-   `packages/global/*/package.json` files) to the same new version.
+1. Bump `version` in every `package.json` under `packages/` **whose code
+   actually changed**, and the internal `dependencies` versions in the packages
+   that depend on them. You do not have to bump every package for every
+   release — see step 4.
 2. Update `CHANGELOG.md`: move `[Unreleased]` items under a new
    `## [x.y.z] - YYYY-MM-DD` heading.
 3. Commit, then tag and push:
@@ -144,11 +145,26 @@ CI will fail if bundle size exceeds configured limits.
    git push origin main --tags
    ```
 4. Pushing the tag triggers `.github/workflows/release.yml`, which builds,
-   tests, typechecks, and publishes `@idvalidator/core` ->
-   `@idvalidator/global-phone`/`global-email` -> `idvalidator-id` ->
-   `@idvalidator/data-id-address`, in that order (a package is never
-   published before a workspace dependency it needs is already live), with
-   `--provenance` attestation attached to each.
+   tests, typechecks, and publishes **only the packages whose version is ahead
+   of what is already on the registry**, in workspace dependency order (a
+   package is never published before a workspace dependency it needs is already
+   live), with `--provenance` attestation attached to each.
+
+Check what a tag would publish before you push it:
+
+```bash
+npm run release:dry-run   # prints CURRENT / BUMP / NEW per package
+```
+
+A tag whose versions are all already live publishes nothing and the workflow
+still goes green — re-tagging an already-released state is a no-op, not a
+failure. If the dry run reports `CURRENT` for a package you expected to
+release, you forgot to bump its `version`.
+
+> [!IMPORTANT]
+> The version bump in each `package.json` is what selects a package for
+> publishing. CI reads versions, it does not diff commits — bumping a version
+> without the corresponding code change ships an empty release.
 
 ### Manual publish (no CI)
 
@@ -162,11 +178,7 @@ CI will fail if bundle size exceeds configured limits.
 npm ci
 npm run build
 npm test
-npm publish --workspace packages/core --access public
-npm publish --workspace packages/global/phone --access public
-npm publish --workspace packages/global/email --access public
-npm publish --workspace packages/id --access public
-npm publish --workspace packages/data-id-address --access public
+npm run release:check   # publishes only the bumped packages, in dep order
 ```
 
 ### Before the very first release
